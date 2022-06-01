@@ -1,11 +1,11 @@
 package com.example.gymcot.config;
 
-import com.example.gymcot.config.auth.PrincipalOAuth2UserService;
+import com.example.gymcot.config.auth.OAuthSuccessHandler;
+import com.example.gymcot.config.auth.PrincipalDetailsService;
 import com.example.gymcot.config.auth.filters.JwtAuthenticationFilter;
 import com.example.gymcot.config.auth.filters.JwtAuthorizationFilter;
 import com.example.gymcot.repository.MemberRepository;
-import org.springframework.web.filter.CorsFilter;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -15,21 +15,29 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.web.filter.CorsFilter;
+
+import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity // 스프링 시큐리티 필터가 스프링 필터체인에 등록된다
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
+@RequiredArgsConstructor
 // Sucure 어노테이션 활성화, PreAuthorize, PostAut인orize 어노테이션 활성화
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private PrincipalOAuth2UserService principalOAuth2UserService;
+    private final CorsFilter corsFilter;
 
-    @Autowired
-    private CorsFilter corsFilter;
+    private final MemberRepository memberRepository;
 
-    @Autowired
-    private MemberRepository memberRepository;
+    private final DataSource dataSource;
+
+    private final PrincipalDetailsService principalDetailsService;
+
+    private final OAuthSuccessHandler oAuthSuccessHandler;
 
     @Bean
     RoleHierarchy roleHierarchy() {
@@ -38,15 +46,38 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return roleHierarchy;
     }
 
+    @Bean
+    PersistentTokenRepository tokenRepository(){
+        JdbcTokenRepositoryImpl repository = new JdbcTokenRepositoryImpl();
+        repository.setDataSource(dataSource);
+        try{
+            repository.removeUserTokens("1");
+        }catch(Exception ex){
+            repository.setCreateTableOnStartup(true);
+        }
+        return repository;
+    }
+
+    @Bean
+    PersistentTokenBasedRememberMeServices rememberMeServices(){
+        PersistentTokenBasedRememberMeServices service =
+                new PersistentTokenBasedRememberMeServices("gymcot",
+                        principalDetailsService,
+                        tokenRepository()
+                );
+        return service;
+    }
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
         http.csrf().disable();
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+        http.
+                sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().rememberMe(httpSecurityRememberMeConfigurer -> httpSecurityRememberMeConfigurer.rememberMeServices(rememberMeServices()))
                 .addFilter(corsFilter) //@CrossOrigin -> 인증(X), 시큐리티 필터에 등록 -> 인증(O)
                 .httpBasic().disable()
-                .formLogin().disable()
+//                .formLogin().disable()
                 .addFilter(new JwtAuthenticationFilter(authenticationManager())) // AuthenticationManager
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(), memberRepository))
                 .authorizeRequests()
@@ -63,10 +94,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .defaultSuccessUrl("/")
                 .and()
                 .oauth2Login().loginPage("/loginForm")
-                .userInfoEndpoint()
-                .userService(principalOAuth2UserService);
-        ;
-//                .and();
+                .successHandler(oAuthSuccessHandler).userInfoEndpoint()
+                .userService(principalDetailsService);
+
+
     }
 
     // 구글 로그인이 완료된 뒤의 후처리가 필요,

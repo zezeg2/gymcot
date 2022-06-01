@@ -33,7 +33,6 @@ public class MemberTest {
     @Test
     void memberNormalJoin() throws Exception {
 
-        String url = "http://localhost:8090/join";
         Map<String, String> input = new HashMap<>();
 
         // body에 json 형식으로 회원의 데이터를 넣기 위해서 Map을 이용한다.
@@ -43,7 +42,7 @@ public class MemberTest {
         input.put("email", "test2@google.com");
         input.put("password", "test2_password");
 
-        mockMvc.perform(post("/api/v1/member")
+        mockMvc.perform(post("/api/v1/join")
                         .contentType(MediaType.APPLICATION_JSON)
                         //json 형식으로 데이터를 보낸다고 명시
                         .content(objectMapper.writeValueAsString(input)))
@@ -51,6 +50,29 @@ public class MemberTest {
                 .andExpect(status().isOk())
                 //Http 200을 기대
                 .andDo(print());
-                //화면에 결과를 출력
+        //화면에 결과를 출력
+    }
+
+    @DisplayName("loginTest")
+    @Test
+    void loginTest() throws Exception {
+
+        Map<String, String> input = new HashMap<>();
+
+        // body에 json 형식으로 회원의 데이터를 넣기 위해서 Map을 이용한다.
+        input.put("memberName", "test2");
+        input.put("password", "test2_password");
+
+
+        mockMvc.perform(post("/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+
+                        .content(objectMapper.writeValueAsString(input)))
+                .andExpect(status().isOk())
+                //Http 200을 기대
+                .andDo(print());
+
     }
 }
+
+
