@@ -5,7 +5,7 @@ import com.example.gymcot.config.auth.oauth.provider.GoogleUserInfo;
 import com.example.gymcot.config.auth.oauth.provider.NaverUserInfo;
 import com.example.gymcot.config.auth.oauth.provider.OAuth2UserInfo;
 import com.example.gymcot.domain.member.Member;
-import com.example.gymcot.domain.member.MemberRepository;
+import com.example.gymcot.repository.MemberRepository;
 import com.example.gymcot.domain.member.Role;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,10 +65,10 @@ public class PrincipalOAuth2UserService extends DefaultOAuth2UserService {
         String provider = oAuth2UserInfo.getProvider();
         String providerId = oAuth2UserInfo.getProviderId();
         String email = oAuth2UserInfo.getEmail();
-        String name = oAuth2UserInfo.getName();
+        String memberName = oAuth2UserInfo.getName();
         String OAuthId = provider+"_"+providerId;
         String password = bCryptPasswordEncoder.encode("getInThere");
-        Role role = Role.MEMBER;
+        Role role = Role.ROLE_MEMBER;
 
         Member memberEntity = memberRepository.findByMemberName(OAuthId);
 
@@ -77,7 +77,8 @@ public class PrincipalOAuth2UserService extends DefaultOAuth2UserService {
             memberEntity = Member.builder()
                     .OAuthId(OAuthId)
                     .email(email)
-                    .memberName(name)
+                    .memberName(memberName)
+                    .nickName(memberName)
                     .password(password)
                     .role(role)
                     .provider(provider)

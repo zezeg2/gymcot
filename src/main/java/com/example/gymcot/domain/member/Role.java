@@ -2,10 +2,9 @@ package com.example.gymcot.domain.member;
 
 public enum Role {
 
-    GUEST("ROLE_GUEST"),
-    MEMBER("ROLE_MEMBER"),
-    GYM("ROLE_MANAGER"),
-    ADMIN("ROLE_ADMIN");
+    ROLE_MEMBER("ROLE_MEMBER"),
+    ROLE_MANAGER("ROLE_MANAGER"),
+    ROLE_ADMIN("ROLE_ADMIN");
 
     private final String key;
 

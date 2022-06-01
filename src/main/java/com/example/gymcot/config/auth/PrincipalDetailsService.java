@@ -1,7 +1,7 @@
 package com.example.gymcot.config.auth;
 
 import com.example.gymcot.domain.member.Member;
-import com.example.gymcot.domain.member.MemberRepository;
+import com.example.gymcot.repository.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

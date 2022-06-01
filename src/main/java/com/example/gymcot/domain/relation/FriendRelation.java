@@ -1,0 +1,17 @@
+package com.example.gymcot.domain.relation;
+
+import lombok.*;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Entity
+@DiscriminatorValue("F")
+public class FriendRelation extends Relation {
+    private boolean approved;
+}

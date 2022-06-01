@@ -1,7 +1,7 @@
 package com.example.gymcot.controller;
 
 import com.example.gymcot.config.auth.PrincipalDetails;
-import com.example.gymcot.domain.member.Member;
+import com.example.gymcot.domain.member.MemberCreateDto;
 import com.example.gymcot.service.member.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.validation.Valid;
 
 @Controller
 @Slf4j
@@ -79,8 +81,8 @@ public class IndexController {
     //security config 파일 작성후에 작동함
 
     @PostMapping("/join")
-    public String join(Member user) {
-        userService.join(user);
+    public String join(@Valid MemberCreateDto memberCreateDto) {
+        userService.join(memberCreateDto);
         return "redirect:/loginForm";
     }
     @Secured("ROLE_ADMIN")
