@@ -14,7 +14,7 @@ import javax.validation.constraints.Pattern;
 @Builder
 public class MemberCreateDto {
 
-    private String memberName;
+    private String username;
 
     private String nickName;
 
@@ -28,7 +28,7 @@ public class MemberCreateDto {
 
     public Member toEntity() {
         Member member = Member.builder()
-                .memberName(memberName)
+                .username(username)
                 .nickName(nickName)
                 .phone(phone)
                 .password(password)

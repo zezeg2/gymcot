@@ -30,7 +30,7 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
                 .withSubject(principalDetail.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .withClaim("id", principalDetail.getMember().getId())
-                .withClaim("memberName", principalDetail.getMember().getMemberName())
+                .withClaim("memberName", principalDetail.getMember().getUsername())
                 .sign(Algorithm.HMAC512(SECRET));
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + jwtToken);
         log.info("Authentication HEader : {}", TOKEN_PREFIX + jwtToken);

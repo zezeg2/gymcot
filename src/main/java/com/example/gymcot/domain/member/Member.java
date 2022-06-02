@@ -22,7 +22,7 @@ public class Member {
 
     private String OAuthId;
 
-    private String memberName;
+    private String username;
 
     private String nickName;
 

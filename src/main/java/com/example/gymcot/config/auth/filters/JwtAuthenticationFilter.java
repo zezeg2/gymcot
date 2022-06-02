@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -28,12 +29,13 @@ import static com.example.gymcot.config.JwtProperties.*;
   /login 요청에서 username, password 전송하면(post)
   UsernamePasswordAuthenticationFilter 동작
  */
-
 @RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
     private final AuthenticationManager authenticationManager;
 
+    private final PersistentTokenBasedRememberMeServices rememberMeServices;
     /* login 요청을 하면 로그인 시도를 위해서 실행되는 함수 */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -50,16 +52,29 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         */
 
         try {
-            ObjectMapper om = new ObjectMapper();
-            Member member = om.readValue(request.getInputStream(), Member.class);
+            Member member;
+            if (request.getContentType().equals("application/x-www-form-urlencoded")){
+                String username = obtainUsername(request);
+                username = (username != null) ? username : "";
+                username = username.trim();
+                String password = obtainPassword(request);
+                password = (password != null) ? password : "";
+                member = Member.builder()
+                        .username(username)
+                        .password(password)
+                        .build();
+            } else{
+                ObjectMapper om = new ObjectMapper();
+                member = om.readValue(request.getInputStream(), Member.class);
+            }
             log.info("Input Value : {} ", member);
 
             UsernamePasswordAuthenticationToken authenticationToken
-                    = new UsernamePasswordAuthenticationToken(member.getMemberName(), member.getPassword());
+                    = new UsernamePasswordAuthenticationToken(member.getUsername(), member.getPassword());
 
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
             PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-            log.info("Login successful : {}", principalDetails.getMember().getMemberName());
+            log.info("Login successful : {}", principalDetails.getMember().getUsername());
 
             return authentication;
         } catch (IOException e) {
@@ -79,15 +94,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         PrincipalDetails principalDetail = (PrincipalDetails) authResult.getPrincipal();
 
-
         /* Hash 암호방식 */
         String jwtToken = JWT.create()
                 .withSubject(principalDetail.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .withClaim("id", principalDetail.getMember().getId())
-                .withClaim("memberName", principalDetail.getMember().getMemberName())
+                .withClaim("memberName", principalDetail.getMember().getUsername())
                 .sign(Algorithm.HMAC512(SECRET));
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + jwtToken);
+        this.setRememberMeServices(rememberMeServices);
         super.successfulAuthentication(request, response, chain, authResult);
     }
 

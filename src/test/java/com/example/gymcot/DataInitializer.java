@@ -51,7 +51,7 @@ public class DataInitializer {
     void initData() {
         createGym("healthGoodHealth", true, "dogkjak-gu");
         createMember("jonghyeon", "jby", "010-2086-9320", Role.ROLE_MEMBER, "whdgus003@gmail.com", "whdqkr003", gymRepository.findById(1L).get());
-        Member me = memberRepository.findByMemberName("jonghyeon");
+        Member me = memberRepository.findByUsername("jonghyeon");
         System.out.println(me);
     }
 

@@ -6,110 +6,64 @@ import com.example.gymcot.config.auth.filters.JwtAuthenticationFilter;
 import com.example.gymcot.config.auth.filters.JwtAuthorizationFilter;
 import com.example.gymcot.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
-import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
-import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.web.filter.CorsFilter;
 
-import javax.sql.DataSource;
-
 @Configuration
-@EnableWebSecurity // 스프링 시큐리티 필터가 스프링 필터체인에 등록된다
+@EnableWebSecurity(debug = true) // 스프링 시큐리티 필터가 스프링 필터체인에 등록된다
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @RequiredArgsConstructor
+@Slf4j
 // Sucure 어노테이션 활성화, PreAuthorize, PostAut인orize 어노테이션 활성화
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final CorsFilter corsFilter;
+    private final PrincipalDetailsService principalDetailsService;
 
     private final MemberRepository memberRepository;
 
-    private final DataSource dataSource;
-
-    private final PrincipalDetailsService principalDetailsService;
-
     private final OAuthSuccessHandler oAuthSuccessHandler;
 
-    @Bean
-    RoleHierarchy roleHierarchy() {
-        RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_MANAGER > ROLE_MEMBER > ROLE_GUEST");
-        return roleHierarchy;
-    }
+    private final CorsFilter corsFilter;
 
-    @Bean
-    PersistentTokenRepository tokenRepository(){
-        JdbcTokenRepositoryImpl repository = new JdbcTokenRepositoryImpl();
-        repository.setDataSource(dataSource);
-        try{
-            repository.removeUserTokens("1");
-        }catch(Exception ex){
-            repository.setCreateTableOnStartup(true);
-        }
-        return repository;
-    }
-
-    @Bean
-    PersistentTokenBasedRememberMeServices rememberMeServices(){
-        PersistentTokenBasedRememberMeServices service =
-                new PersistentTokenBasedRememberMeServices("gymcot",
-                        principalDetailsService,
-                        tokenRepository()
-                );
-        return service;
-    }
+    private final PersistentTokenBasedRememberMeServices rememberMeServices;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
         http.csrf().disable();
-        http.
-                sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().rememberMe(httpSecurityRememberMeConfigurer -> httpSecurityRememberMeConfigurer.rememberMeServices(rememberMeServices()))
-                .addFilter(corsFilter) //@CrossOrigin -> 인증(X), 시큐리티 필터에 등록 -> 인증(O)
+        http
+//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and()
                 .httpBasic().disable()
-//                .formLogin().disable()
-                .addFilter(new JwtAuthenticationFilter(authenticationManager())) // AuthenticationManager
+                .addFilter(corsFilter) //@CrossOrigin -> 인증(X), 시큐리티 필터에 등록 -> 인증(O)
+                .addFilter(new JwtAuthenticationFilter(authenticationManager(), rememberMeServices)) // AuthenticationManager
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(), memberRepository))
-                .authorizeRequests()
-                .mvcMatchers("/", "/css/**", "/scripts/**", "/plugin/**", "/fonts/**").permitAll()
-                .antMatchers("/api/v1/member/**")
-                .access("hasRole('ROLE_MEMBER') or hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-                .antMatchers("/api/v1/manager/**")
-                .access("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
-                .antMatchers("/api/v1/admin/**")
-                .access("hasRole('ROLE_ADMIN')")
-                .anyRequest().permitAll()
-//                .and().formLogin().loginPage("/loginForm")
-//                .loginProcessingUrl("/login") // /login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행
-//                .defaultSuccessUrl("/")
-                .and()
-                .oauth2Login().loginPage("/loginForm")
-                .successHandler(oAuthSuccessHandler).userInfoEndpoint()
-                .userService(principalDetailsService);
+
+                .authorizeRequests(request -> request.mvcMatchers("/", "/css/**", "/scripts/**", "/plugin/**", "/fonts/**").permitAll()
+                        .antMatchers("/api/v1/member/**").access("hasRole('ROLE_MEMBER')")
+                        .antMatchers("/api/v1/manager/**").access("hasRole('ROLE_MANAGER')")
+                        .antMatchers("/api/v1/admin/**").access("hasRole('ROLE_ADMIN')")
+                        .anyRequest().permitAll())
+
+                .formLogin(login -> login.loginPage("/loginForm")
+                        .loginProcessingUrl("/login")
+                        .permitAll()// /login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행
+                        .defaultSuccessUrl("/")
+                        .failureUrl("/login-error"))
+
+                .oauth2Login(login -> login.loginPage("/loginForm")
+                        .successHandler(oAuthSuccessHandler).userInfoEndpoint()
+                        .userService(principalDetailsService))
+                .logout().deleteCookies("JSESSIONID", "remember-me");
 
 
     }
-
-    // 구글 로그인이 완료된 뒤의 후처리가 필요,
-    /**
-     *  1. 코드 받기(인증),
-     *  2. 액세스 토큰,
-     *  3.사용자프로필 정보를 가져오고,
-     *  4. 그 정보를 토대 회원가입을 진행시키기도함,
-     *  5.추가정보
-     */
-
 }
-//해당 메서드의 리턴되는 오브젝트를 IoC로 등록해줌
 
 

@@ -36,7 +36,7 @@ public class PrincipalDetailsService extends DefaultOAuth2UserService implements
     // 함수 종료시 @AuthenticationPrincipal 어노테이션이 만들어진다
     @Override
     public UserDetails loadUserByUsername(String memberName) throws UsernameNotFoundException {
-        Member memberEntity = memberRepository.findByMemberName(memberName);
+        Member memberEntity = memberRepository.findByUsername(memberName);
         if (memberEntity!= null) return new PrincipalDetails(memberEntity); //  PrincipalDetails 타입으로 리턴
         return null;
     }
@@ -78,14 +78,14 @@ public class PrincipalDetailsService extends DefaultOAuth2UserService implements
         String password = bCryptPasswordEncoder.encode("getInThere");
         Role role = Role.ROLE_MEMBER;
 
-        Member memberEntity = memberRepository.findByMemberName(memberName);
+        Member memberEntity = memberRepository.findByUsername(memberName);
 
         if(memberEntity == null){
             log.info(provider + " 로그인이 최초입니다. ");
             memberEntity = Member.builder()
                     .OAuthId(OAuthId)
                     .email(email)
-                    .memberName(memberName)
+                    .username(memberName)
                     .nickName(memberName)
                     .password(password)
                     .role(role)

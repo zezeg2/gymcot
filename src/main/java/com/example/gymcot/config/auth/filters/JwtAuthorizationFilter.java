@@ -6,6 +6,7 @@ import com.example.gymcot.config.auth.PrincipalDetails;
 import com.example.gymcot.domain.member.Member;
 import com.example.gymcot.repository.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -30,10 +31,12 @@ import static com.example.gymcot.config.JwtProperties.*;
  만약에 권한이 인증이 필요한 주소가 아니라면 이 필터를 타지 않음
  */
 
+
 @Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    private final MemberRepository memberRepository;
+    @Autowired private MemberRepository memberRepository;
+
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager, MemberRepository memberRepository) {
         super(authenticationManager);
         this.memberRepository = memberRepository;
@@ -58,7 +61,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         /* 서명이 정상적으로 되었을 때 */
         if (memberName != null){
-            Member memberEntity = memberRepository.findByMemberName(memberName);
+            Member memberEntity = memberRepository.findByUsername(memberName);
             PrincipalDetails principalDetail = new PrincipalDetails(memberEntity);
 
             /* JWT 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어준다 */
