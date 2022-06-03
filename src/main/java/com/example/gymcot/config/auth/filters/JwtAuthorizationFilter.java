@@ -2,6 +2,7 @@ package com.example.gymcot.config.auth.filters;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.example.gymcot.config.auth.PrincipalDetails;
 import com.example.gymcot.domain.member.Member;
 import com.example.gymcot.repository.MemberRepository;
@@ -35,7 +36,8 @@ import static com.example.gymcot.config.JwtProperties.*;
 @Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-    @Autowired private MemberRepository memberRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
     public JwtAuthorizationFilter(AuthenticationManager authenticationManager, MemberRepository memberRepository) {
         super(authenticationManager);
@@ -51,26 +53,35 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         /* JWT 토큰을 검증을 해서 정상적인 사용자인지 확인 */
         if (jwtHeader == null || !jwtHeader.startsWith("Bearer")) {
-            chain.doFilter(request,response);
+            chain.doFilter(request, response);
             return;
         }
 
-        String jwtToken = request.getHeader(HEADER_STRING).replace(TOKEN_PREFIX,"");
-        String memberName = JWT.require(Algorithm.HMAC512(SECRET)).build().verify(jwtToken).getClaim("memberName").asString();
+        String jwtToken = request.getHeader(HEADER_STRING).replace(TOKEN_PREFIX, "");
+        try {
+            String memberName = JWT.require(Algorithm.HMAC512(SECRET)).build().verify(jwtToken).getClaim("memberName").asString();
+            /* 서명이 정상적으로 되었을 때 */
+            if (memberName != null) {
+                Member memberEntity = memberRepository.findByUsername(memberName);
+                PrincipalDetails principalDetail = new PrincipalDetails(memberEntity);
 
+                /* JWT 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어준다 */
+                Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetail, null, principalDetail.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+                log.info(authorities.toString());
+                ;
 
-        /* 서명이 정상적으로 되었을 때 */
-        if (memberName != null){
-            Member memberEntity = memberRepository.findByUsername(memberName);
-            PrincipalDetails principalDetail = new PrincipalDetails(memberEntity);
+                chain.doFilter(request, response);
+            }
 
-            /* JWT 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어준다 */
-            Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetail, null, principalDetail.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-            log.info(authorities.toString());;
-
-            chain.doFilter(request,response);
+        } catch (TokenExpiredException e){
+            log.info("jwt 토큰이 만료되었습니다. ");
+            response.addHeader("jwt-expired", "true");
+            chain.doFilter(request, response);
         }
+
+
+
     }
 }

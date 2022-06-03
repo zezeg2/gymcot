@@ -1,5 +1,6 @@
 package com.example.gymcot.config;
 
+import com.example.gymcot.config.auth.ExpiredJwtRefreshHandler;
 import com.example.gymcot.config.auth.OAuthSuccessHandler;
 import com.example.gymcot.config.auth.PrincipalDetailsService;
 import com.example.gymcot.config.auth.filters.JwtAuthenticationFilter;
@@ -12,6 +13,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.web.filter.CorsFilter;
 
@@ -20,7 +22,7 @@ import org.springframework.web.filter.CorsFilter;
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @RequiredArgsConstructor
 @Slf4j
-// Sucure 어노테이션 활성화, PreAuthorize, PostAut인orize 어노테이션 활성화
+
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PrincipalDetailsService principalDetailsService;
@@ -31,18 +33,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CorsFilter corsFilter;
 
-    private final PersistentTokenBasedRememberMeServices rememberMeServices;
+    private final PersistentTokenBasedRememberMeServices persistentTokenBasedRememberMeServices;
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
         http.csrf().disable();
         http
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
                 .httpBasic().disable()
                 .addFilter(corsFilter) //@CrossOrigin -> 인증(X), 시큐리티 필터에 등록 -> 인증(O)
-                .addFilter(new JwtAuthenticationFilter(authenticationManager(), rememberMeServices)) // AuthenticationManager
+//                .addFilter(new JwtAuthenticationFilter(authenticationManager(), persistentTokenBasedRememberMeServices)) // AuthenticationManager
+                .addFilter(new JwtAuthenticationFilter(authenticationManager())) // AuthenticationManager
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(), memberRepository))
 
                 .authorizeRequests(request -> request.mvcMatchers("/", "/css/**", "/scripts/**", "/plugin/**", "/fonts/**").permitAll()
@@ -60,6 +64,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .oauth2Login(login -> login.loginPage("/loginForm")
                         .successHandler(oAuthSuccessHandler).userInfoEndpoint()
                         .userService(principalDetailsService))
+
+                .rememberMe(r -> r.rememberMeServices(persistentTokenBasedRememberMeServices).authenticationSuccessHandler(new ExpiredJwtRefreshHandler()))
+
                 .logout().deleteCookies("JSESSIONID", "remember-me");
 
 
