@@ -1,6 +1,6 @@
 package com.example.gymcot.domain.gym;
 
-import com.example.gymcot.domain.member.Member;
+import com.example.gymcot.domain.member.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -27,5 +27,5 @@ public class Gym {
 
     @Builder.Default
     @OneToMany(fetch = FetchType.LAZY)
-    private List<Member> members = new ArrayList<>();
+    private List<User> users = new ArrayList<>();
 }

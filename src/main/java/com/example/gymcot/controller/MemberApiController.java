@@ -1,36 +1,31 @@
 package com.example.gymcot.controller;
 
-import com.example.gymcot.domain.member.MemberCreateDto;
-import com.example.gymcot.service.member.MemberService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
+import com.example.gymcot.domain.member.User;
+import com.example.gymcot.domain.member.UserDto;
+import com.example.gymcot.repository.UserRepository;
+import com.example.gymcot.service.member.UserService;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1")
-@RequiredArgsConstructor
-public class MemberApiController {
+public class MemberApiController extends UserApiController {
 
-    private final MemberService memberService;
-
-    @PostMapping("/join")
-    public void join(@RequestBody MemberCreateDto memberCreateDto) throws IOException {
-        memberService.join(memberCreateDto);
+    public MemberApiController(UserRepository userRepository, UserService userService) {
+        super(userRepository, userService);
     }
 
     @GetMapping("/member")
-    public String member(){
-        return "user";
+    public User member(Authentication authentication){
+        return userRepository.findById(getSessionId(authentication)).get();
     }
 
-    @GetMapping("/manager")
-    public String manager(){
-        return "manager";
+    @PostMapping("/member")
+    public void updateMember(Authentication authentication, UserDto userDto){
+        userService.update(getSessionId(authentication), userDto);
     }
 
-    @GetMapping("/admin")
-    public String admin(){
-        return "admin";
-    }
 }

@@ -4,9 +4,9 @@ import com.example.gymcot.config.auth.oauth.provider.FacebookUserInfo;
 import com.example.gymcot.config.auth.oauth.provider.GoogleUserInfo;
 import com.example.gymcot.config.auth.oauth.provider.NaverUserInfo;
 import com.example.gymcot.config.auth.oauth.provider.OAuth2UserInfo;
-import com.example.gymcot.domain.member.Member;
+import com.example.gymcot.domain.member.User;
 import com.example.gymcot.domain.member.Role;
-import com.example.gymcot.repository.MemberRepository;
+import com.example.gymcot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,14 +30,14 @@ import java.util.Map;
 public class PrincipalDetailsService extends DefaultOAuth2UserService implements UserDetailsService  {
 
 
-    private final MemberRepository memberRepository;
+    private final UserRepository memberRepository;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     // 함수 종료시 @AuthenticationPrincipal 어노테이션이 만들어진다
     @Override
     public UserDetails loadUserByUsername(String memberName) throws UsernameNotFoundException {
-        Member memberEntity = memberRepository.findByUsername(memberName);
-        if (memberEntity!= null) return new PrincipalDetails(memberEntity); //  PrincipalDetails 타입으로 리턴
+        User userEntity = memberRepository.findByUsername(memberName);
+        if (userEntity != null) return new PrincipalDetails(userEntity); //  PrincipalDetails 타입으로 리턴
         return null;
     }
 
@@ -73,28 +73,27 @@ public class PrincipalDetailsService extends DefaultOAuth2UserService implements
         String provider = oAuth2UserInfo.getProvider();
         String providerId = oAuth2UserInfo.getProviderId();
         String email = oAuth2UserInfo.getEmail();
-        String memberName = oAuth2UserInfo.getName();
+        String username = oAuth2UserInfo.getName();
         String OAuthId = provider+"_"+providerId;
         String password = bCryptPasswordEncoder.encode("getInThere");
         Role role = Role.ROLE_MEMBER;
 
-        Member memberEntity = memberRepository.findByUsername(memberName);
+        User userEntity = memberRepository.findByUsername(username);
 
-        if(memberEntity == null){
+        if(userEntity == null){
             log.info(provider + " 로그인이 최초입니다. ");
-            memberEntity = Member.builder()
+            userEntity = User.builder()
                     .OAuthId(OAuthId)
                     .email(email)
-                    .username(memberName)
-                    .nickName(memberName)
+                    .username(username)
                     .password(password)
                     .role(role)
                     .provider(provider)
                     .providerId(providerId)
                     .build();
-            memberRepository.save(memberEntity);
+            memberRepository.save(userEntity);
         }
         //  PrincipalDetails 타입으로 리턴
-        return new PrincipalDetails(memberEntity, oAuth2User.getAttributes());
+        return new PrincipalDetails(userEntity, oAuth2User.getAttributes());
     }
 }

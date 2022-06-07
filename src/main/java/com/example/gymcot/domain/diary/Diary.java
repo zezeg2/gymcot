@@ -1,6 +1,6 @@
 package com.example.gymcot.domain.diary;
 
-import com.example.gymcot.domain.member.Member;
+import com.example.gymcot.domain.member.User;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +16,7 @@ public class Diary {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Member member;
+    private User user;
 
     private Evaluation eval;
 

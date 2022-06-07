@@ -5,8 +5,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.example.gymcot.config.auth.PrincipalDetails;
-import com.example.gymcot.domain.member.Member;
-import com.example.gymcot.repository.MemberRepository;
+import com.example.gymcot.domain.member.User;
+import com.example.gymcot.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -40,19 +40,19 @@ import static com.example.gymcot.config.JwtProperties.*;
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     @Autowired
-    private MemberRepository memberRepository;
+    private UserRepository userRepository;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, MemberRepository memberRepository) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
         super(authenticationManager);
-        this.memberRepository = memberRepository;
+        this.userRepository = userRepository;
     }
 
     /* 인증이나 권한이 필요한 주소요청이 있을 때 해당 필터를 타게됨. */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        System.out.println("인증이나 권한이 필요한 주소가 요청이 됨 ");
+//        System.out.println("인증이나 권한이 필요한 주소가 요청이 됨 ");
         String jwtHeader = request.getHeader(HEADER_STRING);
-        System.out.println("jwtHeader : " + jwtHeader);
+//        System.out.println("jwtHeader : " + jwtHeader);
 
         /* JWT 토큰을 검증을 해서 정상적인 사용자인지 확인 */
         if (jwtHeader == null || !jwtHeader.startsWith("Bearer")) {
@@ -67,8 +67,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             String memberName = claims.get("username").asString();
             /* 서명이 정상적으로 되었을 때 */
             if (memberName != null) {
-                Member memberEntity = memberRepository.findByUsername(memberName);
-                PrincipalDetails principalDetail = new PrincipalDetails(memberEntity);
+                User userEntity = userRepository.findByUsername(memberName);
+                PrincipalDetails principalDetail = new PrincipalDetails(userEntity);
 
                 /* JWT 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어준다 */
                 Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetail, null, principalDetail.getAuthorities());

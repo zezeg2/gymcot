@@ -1,6 +1,6 @@
 package com.example.gymcot.config.auth;
 
-import com.example.gymcot.domain.member.Member;
+import com.example.gymcot.domain.member.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,16 +22,16 @@ import java.util.Map;
 @Getter
 public class PrincipalDetails implements UserDetails, OAuth2User {
 
-    private Member member;
+    private User user;
     private Map<String, Object> attributes;
 
     // 일반 로그인
-    public PrincipalDetails(Member member) {
-        this.member = member;
+    public PrincipalDetails(User user) {
+        this.user = user;
     }
     //OAuth 로그인
-    public PrincipalDetails(Member member, Map<String, Object> attributes) {
-        this.member = member;
+    public PrincipalDetails(User user, Map<String, Object> attributes) {
+        this.user = user;
         this.attributes = attributes;
     }
 
@@ -42,7 +42,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return member.getRole().getKey();
+                return user.getRole().getKey();
             }
         });
         return collection;
@@ -50,12 +50,12 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 
     @Override
     public String getPassword() {
-        return member.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return member.getUsername();
+        return user.getUsername();
     }
 
     @Override
@@ -89,7 +89,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 
     @Override
     public String getName() {
-        return member.getUsername();
+        return user.getUsername();
     }
 
 }

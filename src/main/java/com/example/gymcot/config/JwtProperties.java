@@ -20,8 +20,8 @@ public interface JwtProperties {
         String jwtToken = JWT.create()
                 .withSubject(principalDetail.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .withClaim("id", principalDetail.getMember().getId())
-                .withClaim("username", principalDetail.getMember().getUsername())
+                .withClaim("id", principalDetail.getUser().getId())
+                .withClaim("username", principalDetail.getUser().getUsername())
                 .sign(Algorithm.HMAC512(SECRET));
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + jwtToken);
         return TOKEN_PREFIX + jwtToken;

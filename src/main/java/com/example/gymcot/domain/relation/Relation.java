@@ -1,6 +1,6 @@
 package com.example.gymcot.domain.relation;
 
-import com.example.gymcot.domain.member.Member;
+import com.example.gymcot.domain.member.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,8 +19,8 @@ public abstract class Relation {
     private Long id;
 
     @ManyToOne
-    private Member fromMember;
+    private User fromUser;
 
     @OneToOne
-    private Member toMember;
+    private User toUser;
 }

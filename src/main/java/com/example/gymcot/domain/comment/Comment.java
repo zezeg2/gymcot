@@ -1,6 +1,6 @@
 package com.example.gymcot.domain.comment;
 
-import com.example.gymcot.domain.member.Member;
+import com.example.gymcot.domain.member.User;
 import com.example.gymcot.domain.post.Post;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +17,7 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member member;
+    private User user;
 
     @OneToOne
     @JoinColumn(name = "post_id")

@@ -1,6 +1,6 @@
 package com.example.gymcot;
 
-import com.example.gymcot.service.member.MemberService;
+import com.example.gymcot.service.member.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,14 +19,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class MemberTest {
+public class UserTest {
 
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private MemberService memberService;
+    private UserService userService;
 
 
     @DisplayName("memberNormalJoin")

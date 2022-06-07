@@ -5,7 +5,7 @@ import com.example.gymcot.config.auth.OAuthSuccessHandler;
 import com.example.gymcot.config.auth.PrincipalDetailsService;
 import com.example.gymcot.config.auth.filters.JwtAuthenticationFilter;
 import com.example.gymcot.config.auth.filters.JwtAuthorizationFilter;
-import com.example.gymcot.repository.MemberRepository;
+import com.example.gymcot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +27,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PrincipalDetailsService principalDetailsService;
 
-    private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
 
     private final OAuthSuccessHandler oAuthSuccessHandler;
 
@@ -44,12 +44,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .httpBasic().disable()
-                .addFilter(corsFilter) //@CrossOrigin -> 인증(X), 시큐리티 필터에 등록 -> 인증(O)
-//                .addFilter(new JwtAuthenticationFilter(authenticationManager(), persistentTokenBasedRememberMeServices)) // AuthenticationManager
+                .addFilter(corsFilter)
                 .addFilter(new JwtAuthenticationFilter(authenticationManager())) // AuthenticationManager
-                .addFilter(new JwtAuthorizationFilter(authenticationManager(), memberRepository))
+                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
 
                 .authorizeRequests(request -> request.mvcMatchers("/", "/css/**", "/scripts/**", "/plugin/**", "/fonts/**").permitAll()
+                        .mvcMatchers("/v2/**", "/configuration/**", "/swagger*/**", "/webjars/**", "/swagger-resources/**").permitAll()
                         .antMatchers("/api/v1/member/**").access("hasRole('ROLE_MEMBER')")
                         .antMatchers("/api/v1/manager/**").access("hasRole('ROLE_MANAGER')")
                         .antMatchers("/api/v1/admin/**").access("hasRole('ROLE_ADMIN')")

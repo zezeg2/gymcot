@@ -2,7 +2,7 @@ package com.example.gymcot.config.auth.filters;
 
 
 import com.example.gymcot.config.auth.PrincipalDetails;
-import com.example.gymcot.domain.member.Member;
+import com.example.gymcot.domain.member.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,29 +38,29 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("-----------------------  JwtAuthenticationFilter  -----------------------");
 
         try {
-            Member member;
+            User user;
             if (request.getContentType().equals("application/x-www-form-urlencoded")){
                 String username = obtainUsername(request);
                 username = (username != null) ? username : "";
                 username = username.trim();
                 String password = obtainPassword(request);
                 password = (password != null) ? password : "";
-                member = Member.builder()
+                user = User.builder()
                         .username(username)
                         .password(password)
                         .build();
             } else{
                 ObjectMapper om = new ObjectMapper();
-                member = om.readValue(request.getInputStream(), Member.class);
+                user = om.readValue(request.getInputStream(), User.class);
             }
-            log.info("Input Value : {} ", member);
+            log.info("Input Value : {} ", user);
 
             UsernamePasswordAuthenticationToken authenticationToken
-                    = new UsernamePasswordAuthenticationToken(member.getUsername(), member.getPassword());
+                    = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
 
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
             PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-            log.info("Login successful : {}", principalDetails.getMember().getUsername());
+            log.info("Login successful : {}", principalDetails.getUser().getUsername());
 
             return authentication;
         } catch (IOException e) {
