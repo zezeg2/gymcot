@@ -1,5 +1,6 @@
 package com.example.gymcot.service.member;
 
+import com.example.gymcot.domain.gym.Gym;
 import com.example.gymcot.domain.member.Member;
 import com.example.gymcot.domain.member.MemberCreateDto;
 import com.example.gymcot.domain.member.Role;
@@ -25,23 +26,39 @@ public class MemberService {
         member.setRole(Role.ROLE_MEMBER);
         member.setPassword(encoder.encode(member.getPassword()));
         memberRepository.save(member);
-        /*
-         회원가입은 잘 됨,
-         비밀번호 1234 => 시큐리티로 로그인할 수 없음
-         이유는 패스워드가 암호화 안되었기 때문
-         */
     }
 
     public void update(Long id, String nickName , String password, String phone){
         Member findMember = memberRepository.findById(id).get();
-        if (nickName!=null) findMember.setNickName(nickName);
+        if (nickName!=null) {
+            validateDuplicateNickname(findMember);
+            findMember.setNickName(nickName);
+        }
         if (password!=null) {
             findMember.setPassword(encoder.encode(password));
         }
         if (phone!=null) findMember.setPhone(phone);
+    }
+
+    public void setGym(Gym gym, Long id){
+        Member findMember = memberRepository.findById(id).get();
+        findMember.setGym(gym);
+        memberRepository.save(findMember);
+    }
 
 
+    private void validateDuplicateMember(Member member) {
+        Member findMember = memberRepository.findByUsername(member.getUsername());
+        if (findMember!=null) {
+            throw new IllegalStateException("이미 존재하는 회원입니다.");
+        }
+    }
 
+    private void validateDuplicateNickname(Member member){
+        Member findMember = memberRepository.findByNickName(member.getNickName());
+        if (findMember!=null){
+            throw new IllegalStateException("이미 존재하는 닉네임 입니다.");
+        }
     }
 
 

@@ -22,7 +22,7 @@ public class DataInitializer {
 
     private  void createMember(String name, String nickName, String phone, Role role, String email, String password, Gym gym) {
         Member member = Member.builder()
-                .memberName(name)
+                .username(name)
                 .nickName(nickName)
                 .phone(phone)
                 .role(role)

@@ -65,9 +65,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .successHandler(oAuthSuccessHandler).userInfoEndpoint()
                         .userService(principalDetailsService))
 
-                .rememberMe(r -> r.rememberMeServices(persistentTokenBasedRememberMeServices).authenticationSuccessHandler(new ExpiredJwtRefreshHandler()))
+                .rememberMe(r -> r
+                        .rememberMeServices(persistentTokenBasedRememberMeServices).authenticationSuccessHandler(new ExpiredJwtRefreshHandler()))
 
                 .logout().deleteCookies("JSESSIONID", "remember-me");
+
 
 
     }

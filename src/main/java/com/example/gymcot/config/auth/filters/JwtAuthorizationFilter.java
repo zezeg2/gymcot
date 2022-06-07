@@ -3,6 +3,7 @@ package com.example.gymcot.config.auth.filters;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.auth0.jwt.interfaces.Claim;
 import com.example.gymcot.config.auth.PrincipalDetails;
 import com.example.gymcot.domain.member.Member;
 import com.example.gymcot.repository.MemberRepository;
@@ -19,8 +20,10 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 
 import static com.example.gymcot.config.JwtProperties.*;
 
@@ -59,7 +62,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         String jwtToken = request.getHeader(HEADER_STRING).replace(TOKEN_PREFIX, "");
         try {
-            String memberName = JWT.require(Algorithm.HMAC512(SECRET)).build().verify(jwtToken).getClaim("memberName").asString();
+
+            Map<String, Claim> claims = JWT.require(Algorithm.HMAC512(SECRET)).build().verify(jwtToken).getClaims();
+            String memberName = claims.get("username").asString();
             /* 서명이 정상적으로 되었을 때 */
             if (memberName != null) {
                 Member memberEntity = memberRepository.findByUsername(memberName);
@@ -70,7 +75,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
                 log.info(authorities.toString());
-                ;
+
+                HttpSession session = request.getSession(true);
+                session.setAttribute("SESSION_ID", claims.get("id").asLong());
+
 
                 chain.doFilter(request, response);
             }

@@ -21,7 +21,7 @@ public interface JwtProperties {
                 .withSubject(principalDetail.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .withClaim("id", principalDetail.getMember().getId())
-                .withClaim("memberName", principalDetail.getMember().getUsername())
+                .withClaim("username", principalDetail.getMember().getUsername())
                 .sign(Algorithm.HMAC512(SECRET));
         response.addHeader(HEADER_STRING, TOKEN_PREFIX + jwtToken);
         return TOKEN_PREFIX + jwtToken;
