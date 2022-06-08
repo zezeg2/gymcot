@@ -5,10 +5,7 @@ import com.example.gymcot.domain.member.UserDto;
 import com.example.gymcot.repository.UserRepository;
 import com.example.gymcot.service.member.UserService;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -19,13 +16,18 @@ public class MemberApiController extends UserApiController {
     }
 
     @GetMapping("/member")
-    public User member(Authentication authentication){
+    public User member(Authentication authentication) {
         return userRepository.findById(getSessionId(authentication)).get();
     }
 
     @PostMapping("/member")
-    public void updateMember(Authentication authentication, UserDto userDto){
+    public void updateMember(Authentication authentication, UserDto userDto) {
         userService.update(getSessionId(authentication), userDto);
+    }
+
+    @PostMapping("attend")
+    public void changeState(Authentication authentication) {
+        userService.toggleState(getSessionId(authentication));
     }
 
 }

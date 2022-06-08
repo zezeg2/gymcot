@@ -8,24 +8,24 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/admin")
 public class AdminApiController extends UserApiController {
 
     public AdminApiController(UserRepository userRepository, UserService userService) {
         super(userRepository, userService);
     }
 
-    @PostMapping("/admin")
-    public void updateMember(Authentication authentication, UserDto userDto){
+    @PostMapping
+    public void updateAdmin(Authentication authentication, UserDto userDto){
         userService.update(getSessionId(authentication), userDto);
     }
 
-    @GetMapping("/admin")
-    public User manager(Authentication authentication){
+    @GetMapping
+    public User admin(Authentication authentication){
         return userRepository.findById(getSessionId(authentication)).get();
     }
 
-    @PostMapping("/admin/cr/{id}/{role}")
+    @PostMapping("/cr/{id}/{role}")
     public void changeRole(@PathVariable Long id, String role){
         userService.changeRole(id, role);
     }

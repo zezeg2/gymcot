@@ -1,5 +1,6 @@
 package com.example.gymcot.controller;
 
+import com.example.gymcot.domain.gym.GymDto;
 import com.example.gymcot.domain.member.User;
 import com.example.gymcot.domain.member.UserDto;
 import com.example.gymcot.repository.UserRepository;
@@ -11,19 +12,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/manager")
 public class ManagerApiController extends UserApiController {
     public ManagerApiController(UserRepository userRepository, UserService userService) {
         super(userRepository, userService);
     }
 
-    @GetMapping("/manager")
-    public User member(Authentication authentication){
+    @GetMapping
+    public User manager(Authentication authentication){
         return userRepository.findById(getSessionId(authentication)).get();
     }
 
-    @PostMapping("/manager")
-    public void updateMember(Authentication authentication, UserDto userDto){
+    @PostMapping
+    public void updateManager(Authentication authentication, UserDto userDto){
         userService.update(getSessionId(authentication), userDto);
     }
+
+    @PostMapping("/enrolGym")
+    public void enrollGym(GymDto gymDto){
+        userService.enrollGym(gymDto);
+    }
+
 }

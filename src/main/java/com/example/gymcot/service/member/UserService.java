@@ -1,9 +1,11 @@
 package com.example.gymcot.service.member;
 
 import com.example.gymcot.domain.gym.Gym;
+import com.example.gymcot.domain.gym.GymDto;
 import com.example.gymcot.domain.member.Role;
 import com.example.gymcot.domain.member.User;
 import com.example.gymcot.domain.member.UserDto;
+import com.example.gymcot.repository.GymRepository;
 import com.example.gymcot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,19 +21,21 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private final GymRepository gymRepository;
+
     private final BCryptPasswordEncoder encoder;
 
-    private void validateDuplicateEmail(User user) {
+    private void validateDuplicateEmail(User user) throws IllegalArgumentException {
         List<User> findUser = userRepository.findByEmail(user.getEmail());
         if (findUser.size() >= 3) {
-            throw new IllegalStateException("같은 이메일로는 최대 3개의 계정까지만 허용됩니다");
+            throw new IllegalArgumentException("같은 이메일로는 최대 3개의 계정까지만 허용됩니다");
         }
     }
 
-    private void validateDuplicateUsername(User user) {
+    private void validateDuplicateUsername(User user) throws IllegalArgumentException{
         User findUser = userRepository.findByUsername(user.getUsername());
         if (findUser != null) {
-            throw new IllegalStateException("이미 존재하는 닉네임 입니다.");
+            throw new IllegalArgumentException("이미 존재하는 닉네임 입니다.");
         }
     }
 
@@ -79,5 +83,9 @@ public class UserService {
         }
         else
             return;
+    }
+
+    public void enrollGym(GymDto gymDto) {
+        gymRepository.save(gymDto.toEntity());
     }
 }

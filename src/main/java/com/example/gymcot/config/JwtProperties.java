@@ -12,7 +12,7 @@ public interface JwtProperties {
 
     String SECRET = "jby";
     //    Integer EXPIRATION_TIME = 1000 * 60 * 30;
-    Integer EXPIRATION_TIME = 10;
+    Integer EXPIRATION_TIME = 60*30*1000;
     String TOKEN_PREFIX = "Bearer ";
     String HEADER_STRING = "Authorization";
 
@@ -23,8 +23,10 @@ public interface JwtProperties {
                 .withClaim("id", principalDetail.getUser().getId())
                 .withClaim("username", principalDetail.getUser().getUsername())
                 .sign(Algorithm.HMAC512(SECRET));
-        response.addHeader(HEADER_STRING, TOKEN_PREFIX + jwtToken);
-        return TOKEN_PREFIX + jwtToken;
+        String jwt = TOKEN_PREFIX + jwtToken;
+        response.addHeader(HEADER_STRING, jwt);
+//        response.addCookie(new Cookie("JWT_TOKEN", jwtToken));
+        return jwt;
     }
 }
 

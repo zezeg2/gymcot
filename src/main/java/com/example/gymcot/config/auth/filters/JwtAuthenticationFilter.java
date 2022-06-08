@@ -75,7 +75,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         PrincipalDetails principalDetail = (PrincipalDetails) authResult.getPrincipal();
 
         /* Hash 암호방식 */
-        String jwt = genToken(response,principalDetail);
+        String jwt = genToken(response, principalDetail);
         log.info("Authentication Header : {}", jwt);
 //        this.setRememberMeServices(persistentTokenBasedRememberMeServices);
         super.successfulAuthentication(request, response, chain, authResult);
