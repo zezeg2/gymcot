@@ -2,9 +2,11 @@ package com.example.gymcot.config.auth.filters;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.example.gymcot.config.auth.PrincipalDetails;
 import com.example.gymcot.domain.member.User;
+import com.example.gymcot.error.ExceptionCode;
 import com.example.gymcot.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import static com.example.gymcot.config.JwtProperties.SECRET;
-
-
+import static com.example.gymcot.config.JwtProperties.genToken;
 
 /*
  시큐리티 필터중 BasicAuthenticationFilter 라는 것이 있음
@@ -74,8 +75,9 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             }).findAny().get();
 
             jwtToken = jwtCookie.getValue();
-        } catch (Exception e){
-            chain.doFilter(request, response);
+        } catch (NullPointerException e){
+            request.setAttribute("exception", ExceptionCode.NONE_TOKEN.getCode());
+//            chain.doFilter(request, response);
         }
 
         try {
@@ -94,20 +96,23 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 chain.doFilter(request, response);
             }
 //            리멤버 미 로직 추가 try catch
-        } catch (Exception fw) {
+        } catch (Exception fe) {
 
-            if (fw.getClass() == TokenExpiredException.class){
+            if (fe.getClass() == TokenExpiredException.class){
                 try {
                     Authentication authentication = rememberMeServices.autoLogin(request, response);
                     rememberMeServices.loginSuccess(request, response, authentication);
-                    //genToken추가
+                    PrincipalDetails principalDetail = (PrincipalDetails) authentication.getPrincipal();
+                    String jwt = genToken(response, principalDetail);
+
                 } catch (AuthenticationException se) {
                     SecurityContextHolder.clearContext();
-                    onUnsuccessfulAuthentication(request, response, se);
+                    request.setAttribute("exception", ExceptionCode.EXPIRED_TOKEN.getCode());
+//                    onUnsuccessfulAuthentication(request, response, se);
                 }
-                return;
+            } else if(fe.getClass() == JWTVerificationException.class){
+                request.setAttribute("exception", ExceptionCode.INVALID_TOKEN.getCode());
             }
-            return;
         }
     }
 }
