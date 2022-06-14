@@ -1,7 +1,7 @@
 package com.example.gymcot.controller;
 
 import com.example.gymcot.domain.member.UserDto;
-import com.example.gymcot.service.member.UserService;
+import com.example.gymcot.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;

@@ -1,4 +1,4 @@
-package com.example.gymcot.service.member;
+package com.example.gymcot.service.user;
 
 import com.example.gymcot.domain.gym.Gym;
 import com.example.gymcot.domain.gym.GymDto;

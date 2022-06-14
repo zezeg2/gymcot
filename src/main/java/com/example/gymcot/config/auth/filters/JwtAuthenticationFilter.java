@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -29,9 +30,19 @@ import static com.example.gymcot.config.JwtProperties.genToken;
 @Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final AuthenticationManager authenticationManager;
+//    private AuthenticationManager authenticationManager;
 
-//    private final PersistentTokenBasedRememberMeServices persistentTokenBasedRememberMeServices;
+    private RememberMeServices rememberMeServices;
+
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, RememberMeServices rememberMeServices) {
+        super(authenticationManager);
+        this.rememberMeServices = rememberMeServices;
+    }
+
+    @Override
+    public RememberMeServices getRememberMeServices() {
+        return super.getRememberMeServices();
+    }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -53,12 +64,13 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 ObjectMapper om = new ObjectMapper();
                 user = om.readValue(request.getInputStream(), User.class);
             }
-            log.info("Input Value : {} ", user);
+            log.info("Input Value : {} ", user.toString());
 
             UsernamePasswordAuthenticationToken authenticationToken
                     = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
 
-            Authentication authentication = authenticationManager.authenticate(authenticationToken);
+
+            Authentication authentication = super.getAuthenticationManager().authenticate(authenticationToken);
             PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
             log.info("Login successful : {}", principalDetails.getUser().getUsername());
 
@@ -75,9 +87,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         PrincipalDetails principalDetail = (PrincipalDetails) authResult.getPrincipal();
 
         /* Hash 암호방식 */
-        String jwt = genToken(response, principalDetail);
+        String jwt = genToken(response,principalDetail);
         log.info("Authentication Header : {}", jwt);
-//        this.setRememberMeServices(persistentTokenBasedRememberMeServices);
+        super.setRememberMeServices(rememberMeServices);
         super.successfulAuthentication(request, response, chain, authResult);
     }
 

@@ -21,13 +21,13 @@ public class ExpiredJwtRefreshHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        if (response.getHeader("jwt-expired").equals("true")){
-            PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
-            PrincipalDetails principalDetail = (PrincipalDetails) authentication.getPrincipal();
-            /* Hash 암호방식 */
-            String jwt = genToken(response,principalDetail);
-            log.info("new JwtToken : {}", jwt);
-        }
+
+            if (response.getHeader("jwt-expired").equals("true")) {
+                PrincipalDetails principalDetail = (PrincipalDetails) authentication.getPrincipal();
+                /* Hash 암호방식 */
+                String jwt = genToken(response, principalDetail);
+                log.info("new JwtToken : {}", jwt);
+            }
 
     }
 }

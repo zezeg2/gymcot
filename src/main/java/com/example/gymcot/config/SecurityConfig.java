@@ -1,6 +1,5 @@
 package com.example.gymcot.config;
 
-import com.example.gymcot.config.auth.ExpiredJwtRefreshHandler;
 import com.example.gymcot.config.auth.OAuthSuccessHandler;
 import com.example.gymcot.config.auth.PrincipalDetailsService;
 import com.example.gymcot.config.auth.filters.JwtAuthenticationFilter;
@@ -22,7 +21,6 @@ import org.springframework.web.filter.CorsFilter;
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @RequiredArgsConstructor
 @Slf4j
-
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PrincipalDetailsService principalDetailsService;
@@ -33,11 +31,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final CorsFilter corsFilter;
 
-    private final PersistentTokenBasedRememberMeServices persistentTokenBasedRememberMeServices;
-
+    private final PersistentTokenBasedRememberMeServices rememberMeServices;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
+        JwtAuthenticationFilter authenticationFilter = new JwtAuthenticationFilter(authenticationManager(), rememberMeServices);
+        JwtAuthorizationFilter authorizationFilter = new JwtAuthorizationFilter(authenticationManager(), userRepository, rememberMeServices);
 
         http.csrf().disable();
         http
@@ -45,8 +45,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .httpBasic().disable()
                 .addFilter(corsFilter)
-                .addFilter(new JwtAuthenticationFilter(authenticationManager())) // AuthenticationManager
-                .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
+                .addFilter(authenticationFilter) // AuthenticationManager
+                .addFilter(authorizationFilter)
 
                 .authorizeRequests(request -> request.mvcMatchers("/", "/css/**", "/scripts/**", "/plugin/**", "/fonts/**").permitAll()
                         .mvcMatchers("/v2/**", "/configuration/**", "/swagger*/**", "/webjars/**", "/swagger-resources/**").permitAll()
@@ -65,10 +65,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         .successHandler(oAuthSuccessHandler).userInfoEndpoint()
                         .userService(principalDetailsService))
 
-                .rememberMe(r -> r
-                        .rememberMeServices(persistentTokenBasedRememberMeServices).authenticationSuccessHandler(new ExpiredJwtRefreshHandler()))
+//                .rememberMe(r -> r
+//                        .rememberMeServices(persistentTokenBasedRememberMeServices).authenticationSuccessHandler(new ExpiredJwtRefreshHandler()))
 
-                .logout().deleteCookies("JSESSIONID", "remember-me", "JWT_COOKIE");
+                .logout().deleteCookies("JSESSIONID");
 
 
 

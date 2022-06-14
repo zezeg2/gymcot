@@ -6,7 +6,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
 import java.sql.Timestamp;
 
 @Entity
@@ -24,11 +23,12 @@ public class User {
 
     private String username;
 
+    private String nickName;
+
     private String phone;
 
     private String password;
 
-    @Email
     private String email;
 
     @Enumerated(EnumType.STRING)

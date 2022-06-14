@@ -4,7 +4,7 @@ import com.example.gymcot.domain.gym.GymDto;
 import com.example.gymcot.domain.member.User;
 import com.example.gymcot.domain.member.UserDto;
 import com.example.gymcot.repository.UserRepository;
-import com.example.gymcot.service.member.UserService;
+import com.example.gymcot.service.user.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

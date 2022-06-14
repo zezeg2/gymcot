@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.gymcot.config.auth.PrincipalDetails;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
@@ -12,7 +13,8 @@ public interface JwtProperties {
 
     String SECRET = "jby";
     //    Integer EXPIRATION_TIME = 1000 * 60 * 30;
-    Integer EXPIRATION_TIME = 60*30*1000;
+//    Integer EXPIRATION_TIME = 60*300*1000;
+    Integer EXPIRATION_TIME = 10*1000;
     String TOKEN_PREFIX = "Bearer ";
     String HEADER_STRING = "Authorization";
 
@@ -25,7 +27,7 @@ public interface JwtProperties {
                 .sign(Algorithm.HMAC512(SECRET));
         String jwt = TOKEN_PREFIX + jwtToken;
         response.addHeader(HEADER_STRING, jwt);
-//        response.addCookie(new Cookie("JWT_TOKEN", jwtToken));
+        response.addCookie(new Cookie("JWT_TOKEN", jwtToken));
         return jwt;
     }
 }

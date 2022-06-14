@@ -30,13 +30,13 @@ import java.util.Map;
 public class PrincipalDetailsService extends DefaultOAuth2UserService implements UserDetailsService  {
 
 
-    private final UserRepository memberRepository;
+    private final UserRepository userRepository;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     // 함수 종료시 @AuthenticationPrincipal 어노테이션이 만들어진다
     @Override
     public UserDetails loadUserByUsername(String memberName) throws UsernameNotFoundException {
-        User userEntity = memberRepository.findByUsername(memberName);
+        User userEntity = userRepository.findByUsername(memberName);
         if (userEntity != null) return new PrincipalDetails(userEntity); //  PrincipalDetails 타입으로 리턴
         return null;
     }
@@ -73,25 +73,26 @@ public class PrincipalDetailsService extends DefaultOAuth2UserService implements
         String provider = oAuth2UserInfo.getProvider();
         String providerId = oAuth2UserInfo.getProviderId();
         String email = oAuth2UserInfo.getEmail();
-        String username = oAuth2UserInfo.getName();
+        String memberName = oAuth2UserInfo.getName();
         String OAuthId = provider+"_"+providerId;
         String password = bCryptPasswordEncoder.encode("getInThere");
         Role role = Role.ROLE_MEMBER;
 
-        User userEntity = memberRepository.findByUsername(username);
+        User userEntity = userRepository.findByUsername(memberName);
 
         if(userEntity == null){
             log.info(provider + " 로그인이 최초입니다. ");
             userEntity = User.builder()
                     .OAuthId(OAuthId)
                     .email(email)
-                    .username(username)
+                    .username(memberName)
+                    .nickName(memberName)
                     .password(password)
                     .role(role)
                     .provider(provider)
                     .providerId(providerId)
                     .build();
-            memberRepository.save(userEntity);
+            userRepository.save(userEntity);
         }
         //  PrincipalDetails 타입으로 리턴
         return new PrincipalDetails(userEntity, oAuth2User.getAttributes());

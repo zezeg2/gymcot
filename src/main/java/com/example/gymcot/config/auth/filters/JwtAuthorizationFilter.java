@@ -3,7 +3,6 @@ package com.example.gymcot.config.auth.filters;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.auth0.jwt.interfaces.Claim;
 import com.example.gymcot.config.auth.PrincipalDetails;
 import com.example.gymcot.domain.member.User;
 import com.example.gymcot.repository.UserRepository;
@@ -12,8 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -21,14 +22,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
 
-import static com.example.gymcot.config.JwtProperties.*;
+import static com.example.gymcot.config.JwtProperties.SECRET;
 
 
 
@@ -45,64 +43,71 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     @Autowired
     private UserRepository userRepository;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
+    private RememberMeServices rememberMeServices;
+
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository, RememberMeServices rememberMeServices) {
         super(authenticationManager);
         this.userRepository = userRepository;
+        this.rememberMeServices = rememberMeServices;
+    }
+
+    @Override
+    protected void onUnsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
+        super.onUnsuccessfulAuthentication(request, response, failed);
+    }
+
+    @Override
+    public void setRememberMeServices(RememberMeServices rememberMeServices) {
+        super.setRememberMeServices(rememberMeServices);
     }
 
     /* 인증이나 권한이 필요한 주소요청이 있을 때 해당 필터를 타게됨. */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-//        System.out.println("인증이나 권한이 필요한 주소가 요청이 됨 ");
-        String jwtToken;
 
-        String jwtHeader = request.getHeader(HEADER_STRING);
-        Optional<Cookie> jwtCookie = Arrays.stream(request.getCookies()).filter(cookie -> {
-            return cookie.getName().equals("JWT_TOKEN");
-        }).findAny();
+        System.out.println("인증이나 권한이 필요한 주소가 요청이 됨 ");
 
-//        System.out.println("jwtHeader : " + jwtHeader);
+        String jwtToken = null;
+        try {
+            Cookie jwtCookie = Arrays.stream(request.getCookies()).filter(cookie -> {
+                return cookie.getName().equals("JWT_TOKEN");
+            }).findAny().get();
 
-        /* JWT 토큰을 검증을 해서 정상적인 사용자인지 확인 */
-        if (jwtHeader == null || !jwtHeader.startsWith("Bearer")) {
-//            if (!jwtCookie.isEmpty()) {
-                chain.doFilter(request, response);
-                return;
-//            }
-//            jwtToken = jwtCookie.get().getValue();
-        }
-        else {
-            jwtToken = request.getHeader(HEADER_STRING).replace(TOKEN_PREFIX, "");
+            jwtToken = jwtCookie.getValue();
+        } catch (Exception e){
+            chain.doFilter(request, response);
         }
 
         try {
-
-            Map<String, Claim> claims = JWT.require(Algorithm.HMAC512(SECRET)).build().verify(jwtToken).getClaims();
-            String memberName = claims.get("username").asString();
+            String username = JWT.require(Algorithm.HMAC512(SECRET)).build().verify(jwtToken).getClaim("username").asString();
             /* 서명이 정상적으로 되었을 때 */
-            if (memberName != null) {
-                User userEntity = userRepository.findByUsername(memberName);
+            if (username != null) {
+                User userEntity = userRepository.findByUsername(username);
                 PrincipalDetails principalDetail = new PrincipalDetails(userEntity);
 
                 /* JWT 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어준다 */
                 Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetail, null, principalDetail.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-                log.info(authorities.toString());
-
-                HttpSession session = request.getSession(true);
-                session.setAttribute("SESSION_ID", claims.get("id").asLong());
 
 
                 chain.doFilter(request, response);
             }
+//            리멤버 미 로직 추가 try catch
+        } catch (Exception fw) {
 
-        } catch (TokenExpiredException e) {
-            log.info("jwt 토큰이 만료되었습니다. ");
-            response.addHeader("jwt-expired", "true");
-            chain.doFilter(request, response);
+            if (fw.getClass() == TokenExpiredException.class){
+                try {
+                    Authentication authentication = rememberMeServices.autoLogin(request, response);
+                    rememberMeServices.loginSuccess(request, response, authentication);
+                    //genToken추가
+                } catch (AuthenticationException se) {
+                    SecurityContextHolder.clearContext();
+                    onUnsuccessfulAuthentication(request, response, se);
+                }
+                return;
+            }
+            return;
         }
-
-
     }
 }

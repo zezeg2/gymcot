@@ -2,7 +2,7 @@ package com.example.gymcot.controller;
 
 import com.example.gymcot.config.auth.PrincipalDetails;
 import com.example.gymcot.repository.UserRepository;
-import com.example.gymcot.service.member.UserService;
+import com.example.gymcot.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 

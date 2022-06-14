@@ -54,7 +54,7 @@ public class SecurityBeans {
     }
 
     @Bean
-    PersistentTokenBasedRememberMeServices persistentTokenBasedRememberMeServices() {
+    PersistentTokenBasedRememberMeServices rememberMeServices() {
         PersistentTokenBasedRememberMeServices service =
                 new PersistentTokenBasedRememberMeServices("gymcot",
                         principalDetailsService,

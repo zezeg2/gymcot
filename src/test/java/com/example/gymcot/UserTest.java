@@ -1,6 +1,5 @@
 package com.example.gymcot;
 
-import com.example.gymcot.service.member.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +25,7 @@ public class UserTest {
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private UserService userService;
+    private MemberService memberService;
 
 
     @DisplayName("memberNormalJoin")
