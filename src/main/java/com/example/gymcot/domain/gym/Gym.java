@@ -1,6 +1,6 @@
 package com.example.gymcot.domain.gym;
 
-import com.example.gymcot.domain.member.User;
+import com.example.gymcot.domain.user.User;
 import lombok.*;
 
 import javax.persistence.*;

@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,8 +23,8 @@ public class SecurityFilterChainExceptionEntryPoint implements AuthenticationEnt
         /**
          * 토큰 없는 경우
          */
-        if(exception == null) {
-            exceptionCode = ExceptionCode.NON_LOGIN;
+        if(exception == ExceptionCode.NONE_TOKEN.getCode()) {
+            exceptionCode = ExceptionCode.NONE_TOKEN;
             setResponse(response, exceptionCode);
             return;
         }
@@ -51,15 +50,14 @@ public class SecurityFilterChainExceptionEntryPoint implements AuthenticationEnt
     /**
      * 한글 출력을 위해 getWriter() 사용
      */
-    @ResponseBody
-    private ExceptionPayload setResponse(HttpServletResponse response, ExceptionCode exceptionCode) throws IOException {
+
+    private void setResponse(HttpServletResponse response, ExceptionCode exceptionCode) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//        response.getWriter().println("{ \"message\" : \"" + exceptionCode.getMessage()
-//                + "\", \"code\" : \"" +  exceptionCode.getCode()
-//                + "\", \"status\" : " + exceptionCode.getMessage()
-//                + ", \"errors\" : [ ] }");
-        return new ExceptionPayload(exceptionCode);
+        response.getWriter().println("{ \"message\" : \"" + exceptionCode.getMessage()
+                + "\", \"code\" : \"" +  exceptionCode.getCode()
+                + "\", \"status\" : " + exceptionCode.getMessage()
+                );
     }
 
 }

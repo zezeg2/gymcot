@@ -1,7 +1,7 @@
 package com.example.gymcot.controller;
 
-import com.example.gymcot.domain.member.User;
-import com.example.gymcot.domain.member.UserDto;
+import com.example.gymcot.domain.user.User;
+import com.example.gymcot.domain.user.UserDto;
 import com.example.gymcot.repository.UserRepository;
 import com.example.gymcot.service.user.UserService;
 import org.springframework.security.core.Authentication;

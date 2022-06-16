@@ -1,8 +1,8 @@
 package com.example.gymcot;
 
 import com.example.gymcot.domain.gym.Gym;
-import com.example.gymcot.domain.member.User;
-import com.example.gymcot.domain.member.Role;
+import com.example.gymcot.domain.user.User;
+import com.example.gymcot.domain.user.Role;
 import com.example.gymcot.repository.GymRepository;
 import com.example.gymcot.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;

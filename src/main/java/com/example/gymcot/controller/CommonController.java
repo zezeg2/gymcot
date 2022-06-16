@@ -1,6 +1,6 @@
 package com.example.gymcot.controller;
 
-import com.example.gymcot.domain.member.UserDto;
+import com.example.gymcot.domain.user.UserDto;
 import com.example.gymcot.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

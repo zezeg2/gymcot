@@ -1,6 +1,6 @@
 package com.example.gymcot.config.auth;
 
-import com.example.gymcot.domain.member.User;
+import com.example.gymcot.domain.user.User;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

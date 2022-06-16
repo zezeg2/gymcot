@@ -1,6 +1,6 @@
 package com.example.gymcot.repository;
 
-import com.example.gymcot.domain.member.User;
+import com.example.gymcot.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -60,6 +60,7 @@ public class SecurityBeans {
                         principalDetailsService,
                         tokenRepository()
                 );
+        service.setTokenValiditySeconds(60*24*30);
         return service;
     }
 }

@@ -1,6 +1,6 @@
 package com.example.gymcot.domain.team;
 
-import com.example.gymcot.domain.member.User;
+import com.example.gymcot.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -5,7 +5,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.example.gymcot.config.auth.PrincipalDetails;
-import com.example.gymcot.domain.member.User;
+import com.example.gymcot.domain.user.User;
 import com.example.gymcot.error.ExceptionCode;
 import com.example.gymcot.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.NoSuchElementException;
 
 import static com.example.gymcot.config.JwtProperties.SECRET;
 import static com.example.gymcot.config.JwtProperties.genToken;
@@ -71,13 +72,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         String jwtToken = null;
         try {
             Cookie jwtCookie = Arrays.stream(request.getCookies()).filter(cookie -> {
-                return cookie.getName().equals("JWT_TOKEN");
+                return cookie.getName().equals("Authorization");
             }).findAny().get();
 
             jwtToken = jwtCookie.getValue();
-        } catch (NullPointerException e){
+        } catch (NullPointerException | NoSuchElementException e) {
             request.setAttribute("exception", ExceptionCode.NONE_TOKEN.getCode());
-//            chain.doFilter(request, response);
+            chain.doFilter(request, response);
         }
 
         try {
@@ -89,8 +90,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
                 /* JWT 토큰 서명을 통해서 서명이 정상이면 Authentication 객체를 만들어준다 */
                 Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetail, null, principalDetail.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+                setAuthority(authentication);
 
 
                 chain.doFilter(request, response);
@@ -98,21 +98,30 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 //            리멤버 미 로직 추가 try catch
         } catch (Exception fe) {
 
-            if (fe.getClass() == TokenExpiredException.class){
+            if (fe.getClass() == TokenExpiredException.class) {
                 try {
                     Authentication authentication = rememberMeServices.autoLogin(request, response);
-                    rememberMeServices.loginSuccess(request, response, authentication);
                     PrincipalDetails principalDetail = (PrincipalDetails) authentication.getPrincipal();
                     String jwt = genToken(response, principalDetail);
+                    setAuthority(authentication);
+                    chain.doFilter(request, response);
 
-                } catch (AuthenticationException se) {
+
+                } catch (NullPointerException se) {
                     SecurityContextHolder.clearContext();
                     request.setAttribute("exception", ExceptionCode.EXPIRED_TOKEN.getCode());
 //                    onUnsuccessfulAuthentication(request, response, se);
+                    chain.doFilter(request, response);
                 }
-            } else if(fe.getClass() == JWTVerificationException.class){
+
+            } else if (fe.getClass() == JWTVerificationException.class) {
                 request.setAttribute("exception", ExceptionCode.INVALID_TOKEN.getCode());
             }
         }
+    }
+
+    private void setAuthority(Authentication authentication) {
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
     }
 }

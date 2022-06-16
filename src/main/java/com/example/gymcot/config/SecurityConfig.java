@@ -4,6 +4,7 @@ import com.example.gymcot.config.auth.OAuthSuccessHandler;
 import com.example.gymcot.config.auth.PrincipalDetailsService;
 import com.example.gymcot.config.auth.filters.JwtAuthenticationFilter;
 import com.example.gymcot.config.auth.filters.JwtAuthorizationFilter;
+import com.example.gymcot.error.SecurityFilterChainExceptionEntryPoint;
 import com.example.gymcot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.web.filter.CorsFilter;
 
@@ -48,11 +50,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(authorizationFilter)
 
                 .authorizeRequests(request ->
-                        request.mvcMatchers("/", "/css/**", "/scripts/**", "/plugin/**", "/fonts/**","/v2/**", "/configuration/**", "/swagger*/**", "/webjars/**", "/swagger-resources/**").permitAll()
-                        .antMatchers("/api/v1/member/**").access("hasRole('ROLE_MEMBER')")
-                        .antMatchers("/api/v1/manager/**").access("hasRole('ROLE_MANAGER')")
-                        .antMatchers("/api/v1/admin/**").access("hasRole('ROLE_ADMIN')")
-                        .anyRequest().permitAll())
+                        request.mvcMatchers("/", "/css/**", "/scripts/**", "/plugin/**", "/fonts/**", "/v2/**", "/configuration/**", "/swagger*/**", "/webjars/**", "/swagger-resources/**").permitAll()
+                                .antMatchers("/api/v1/member/**").access("hasRole('ROLE_MEMBER')")
+                                .antMatchers("/api/v1/manager/**").access("hasRole('ROLE_MANAGER')")
+                                .antMatchers("/api/v1/admin/**").access("hasRole('ROLE_ADMIN')")
+                                .anyRequest().permitAll()
+                )
+
+                .exceptionHandling().authenticationEntryPoint(new SecurityFilterChainExceptionEntryPoint())
 
 //                .formLogin(login -> login.loginPage("/loginForm")
 //                        .loginProcessingUrl("/login")
@@ -60,19 +65,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                        .defaultSuccessUrl("/")
 //                        .failureUrl("/login-error"))
 
+                .and()
                 .oauth2Login(login ->
-                        login.loginPage("/loginForm")
-                        .successHandler(oAuthSuccessHandler).userInfoEndpoint()
-                        .userService(principalDetailsService))
+                        login.successHandler(oAuthSuccessHandler).userInfoEndpoint()
+                                .userService(principalDetailsService))
 
-//                .rememberMe(r -> r
-//                        .rememberMeServices(persistentTokenBasedRememberMeServices).authenticationSuccessHandler(new ExpiredJwtRefreshHandler()))
+                .rememberMe(r -> r
+                        .rememberMeServices(rememberMeServices)
+                )
 
-                .logout().deleteCookies("JWT_TOKEN", "remember-me")
+                .logout()
+                .addLogoutHandler((LogoutHandler) rememberMeServices)
+                .logoutSuccessUrl("/")
+                .deleteCookies("Authorization", "remember-me")
+
 
                 .and()
                 .sessionManagement().disable();
-
 
 
     }

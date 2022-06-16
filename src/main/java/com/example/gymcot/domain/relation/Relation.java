@@ -1,6 +1,6 @@
 package com.example.gymcot.domain.relation;
 
-import com.example.gymcot.domain.member.User;
+import com.example.gymcot.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

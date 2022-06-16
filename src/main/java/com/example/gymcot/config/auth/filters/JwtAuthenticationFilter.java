@@ -2,7 +2,7 @@ package com.example.gymcot.config.auth.filters;
 
 
 import com.example.gymcot.config.auth.PrincipalDetails;
-import com.example.gymcot.domain.member.User;
+import com.example.gymcot.domain.user.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +30,6 @@ import static com.example.gymcot.config.JwtProperties.genToken;
 @Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-//    private AuthenticationManager authenticationManager;
-
     private RememberMeServices rememberMeServices;
 
     public JwtAuthenticationFilter(AuthenticationManager authenticationManager, RememberMeServices rememberMeServices) {
@@ -47,7 +45,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         log.info("-----------------------  JwtAuthenticationFilter  -----------------------");
-
         try {
             User user;
             if (request.getContentType().equals("application/x-www-form-urlencoded")){

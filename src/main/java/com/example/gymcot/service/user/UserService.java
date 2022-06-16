@@ -2,9 +2,9 @@ package com.example.gymcot.service.user;
 
 import com.example.gymcot.domain.gym.Gym;
 import com.example.gymcot.domain.gym.GymDto;
-import com.example.gymcot.domain.member.Role;
-import com.example.gymcot.domain.member.User;
-import com.example.gymcot.domain.member.UserDto;
+import com.example.gymcot.domain.user.Role;
+import com.example.gymcot.domain.user.User;
+import com.example.gymcot.domain.user.UserDto;
 import com.example.gymcot.repository.GymRepository;
 import com.example.gymcot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

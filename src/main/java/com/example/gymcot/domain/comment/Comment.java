@@ -1,6 +1,6 @@
 package com.example.gymcot.domain.comment;
 
-import com.example.gymcot.domain.member.User;
+import com.example.gymcot.domain.user.User;
 import com.example.gymcot.domain.post.Post;
 import lombok.Getter;
 import lombok.Setter;

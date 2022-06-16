@@ -1,4 +1,4 @@
-package com.example.gymcot.domain.member;
+package com.example.gymcot.domain.user;
 
 import com.example.gymcot.domain.gym.Gym;
 import lombok.*;
