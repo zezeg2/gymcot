@@ -19,14 +19,14 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         String ex = (String) request.getAttribute("exception");
-        log.debug("log: exception: {} ", exception);
+        log.debug("log: exception : {} ", exception);
         ExceptionCode exceptionCode = null;
 
         if (ex.equals(ExceptionCode.NOT_FOUND_USER.getCode())) {
             exceptionCode = ExceptionCode.NOT_FOUND_USER;
         }
 
-        ExceptionPayload payload = new ExceptionPayload(exceptionCode);
+        ExceptionPayload payload = new ExceptionPayload(exception, exceptionCode);
         setResponse(response, payload);
 
     }

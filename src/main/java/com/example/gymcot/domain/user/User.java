@@ -23,8 +23,6 @@ public class User {
 
     private String username;
 
-    private String nickName;
-
     private String phone;
 
     private String password;

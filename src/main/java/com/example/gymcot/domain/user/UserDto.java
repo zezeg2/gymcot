@@ -16,8 +16,6 @@ public class UserDto {
     @NotNull
     private String username;
 
-//    @UniqueElements(message = "중복된 닉네임이 존재합니다 ")
-
     @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$")
     private String phone;
 
@@ -26,6 +24,7 @@ public class UserDto {
     private String password;
 
     @Email
+    @NotBlank
     private String email;
 
     private String provider;

@@ -13,12 +13,12 @@ public class ApiExceptionControllerAdvice {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ExceptionPayload processValidationError(MethodArgumentNotValidException exception) {
         BindingResult bindingResult = exception.getBindingResult();
-        return new ExceptionPayload(ExceptionCode.INVALID_INPUT_VALUE, bindingResult);
+        return new ExceptionPayload(exception, ExceptionCode.INVALID_INPUT_VALUE);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ExceptionPayload processValidationError(IllegalArgumentException exception) {
-        return new ExceptionPayload(ExceptionCode.INVALID_INPUT_VALUE);
+        return new ExceptionPayload(exception, ExceptionCode.INVALID_INPUT_VALUE);
     }
 
 

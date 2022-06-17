@@ -49,7 +49,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             exceptionCode = ExceptionCode.INVALID_TOKEN;
         }
 
-        ExceptionPayload payload = new ExceptionPayload(exceptionCode);
+        ExceptionPayload payload = new ExceptionPayload(authException, exceptionCode);
         setResponse(response, payload);
     }
 

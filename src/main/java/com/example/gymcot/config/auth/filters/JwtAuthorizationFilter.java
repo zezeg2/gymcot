@@ -67,8 +67,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
 
-        System.out.println("인증이나 권한이 필요한 주소가 요청이 됨 ");
-
         String jwt = null;
         try {
             Cookie cookie = Arrays.stream(request.getCookies()).filter(c -> {
@@ -82,14 +80,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
 
         try {
-            String username = JWT.require(Algorithm.HMAC512(SECRET)).build().verify(jwt).getClaim("username").asString();
             if (!jwt.startsWith("Bearer")) {
                 request.setAttribute("exception", ExceptionCode.INVALID_TOKEN.getCode());
                 chain.doFilter(request, response);
                 return;
             }
 
-            jwt.replace(TOKEN_PREFIX, "");
+            String username = JWT.require(Algorithm.HMAC512(SECRET)).build().verify(jwt.replace(TOKEN_PREFIX, "")).getClaim("username").asString();
 
             /* 서명이 정상적으로 되었을 때 */
             if (username != null) {

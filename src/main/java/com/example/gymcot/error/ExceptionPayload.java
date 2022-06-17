@@ -3,6 +3,7 @@ package com.example.gymcot.error;
 import lombok.Getter;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 @Getter
 public class ExceptionPayload {
@@ -10,21 +11,25 @@ public class ExceptionPayload {
     private String message;
     private ErrorDetail detail;
 
-    public ExceptionPayload(ExceptionCode code) {
+    public ExceptionPayload(Exception e, ExceptionCode code) {
         this.code = code.getCode();
         this.message = code.getMessage();
-    }
-
-    public ExceptionPayload(final ExceptionCode code, final BindingResult bindingResult) {
-        this.code = code.getCode();
-        this.message = code.getMessage();
-        this.detail = new ErrorDetail(bindingResult);
+        if (e.getClass() == MethodArgumentNotValidException.class) {
+            BindingResult bindingResult = ((MethodArgumentNotValidException) e).getBindingResult();
+            this.detail = new ErrorDetail(bindingResult);
+        } else {
+            this.detail = new ErrorDetail(e.getMessage());
+        }
     }
 
     @Getter
     public static class ErrorDetail {
         private String field;
         private String reason;
+
+        public ErrorDetail(String reason) {
+            this.reason = reason;
+        }
 
         public ErrorDetail(final BindingResult bindingResult) {
             this.field = bindingResult.getFieldError().getField();
