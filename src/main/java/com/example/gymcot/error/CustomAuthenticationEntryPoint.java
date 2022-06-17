@@ -1,6 +1,8 @@
 package com.example.gymcot.error;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
 
 @Component
 @Slf4j
@@ -16,8 +19,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         String exception = (String) request.getAttribute("exception");
-        ExceptionCode exceptionCode;
-
+        ExceptionCode exceptionCode = null;
         log.debug("log: exception: {} ", exception);
 
         /**
@@ -25,16 +27,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
          */
         if (exception.equals(ExceptionCode.NOT_FOUND_USER.getCode())) {
             exceptionCode = ExceptionCode.NOT_FOUND_USER;
-            setResponse(response, exceptionCode);
-            return;
         }
         /**
          * 토큰 없는 경우
          */
         if (exception.equals(ExceptionCode.NONE_TOKEN.getCode())) {
             exceptionCode = ExceptionCode.NONE_TOKEN;
-            setResponse(response, exceptionCode);
-            return;
         }
 
         /**
@@ -42,8 +40,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
          */
         if (exception.equals(ExceptionCode.EXPIRED_TOKEN.getCode())) {
             exceptionCode = ExceptionCode.EXPIRED_TOKEN;
-            setResponse(response, exceptionCode);
-            return;
         }
 
         /**
@@ -51,18 +47,21 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
          */
         if (exception.equals(ExceptionCode.INVALID_TOKEN.getCode())) {
             exceptionCode = ExceptionCode.INVALID_TOKEN;
-            setResponse(response, exceptionCode);
         }
+
+        ExceptionPayload payload = new ExceptionPayload(exceptionCode);
+        setResponse(response, payload);
     }
 
-    private void setResponse(HttpServletResponse response, ExceptionCode exceptionCode) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
+    private void setResponse(HttpServletResponse response, ExceptionPayload payload) throws IOException {
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().println("{ \"message\" : \"" + exceptionCode.getMessage()
-                + "\", \"code\" : \"" + exceptionCode.getCode()
-                + "\", \"status\" : " + exceptionCode.getMessage()
-                + "}"
-        );
+
+        try (OutputStream os = response.getOutputStream()) {
+            ObjectMapper om = new ObjectMapper();
+            om.writeValue(os, payload);
+            os.flush();
+        }
     }
 
 }
