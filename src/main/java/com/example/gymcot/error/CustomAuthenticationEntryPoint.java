@@ -21,6 +21,14 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         log.debug("log: exception: {} ", exception);
 
         /**
+         * 최초 로그인 실패(아이디 및 비밀번호 불일치)
+         */
+        if (exception.equals(ExceptionCode.NOT_FOUND_USER.getCode())) {
+            exceptionCode = ExceptionCode.NOT_FOUND_USER;
+            setResponse(response, exceptionCode);
+            return;
+        }
+        /**
          * 토큰 없는 경우
          */
         if (exception.equals(ExceptionCode.NONE_TOKEN.getCode())) {
@@ -39,15 +47,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         }
 
         /**
-         * 최초 로그인 실패(아이디 및 비밀번호 불일치)
-         */
-        if (exception.equals(ExceptionCode.NOT_FOUND_USER.getCode())) {
-            exceptionCode = ExceptionCode.NOT_FOUND_USER;
-            setResponse(response, exceptionCode);
-            return;
-        }
-
-        /**
          * 토큰 시그니처가 다른 경우
          */
         if (exception.equals(ExceptionCode.INVALID_TOKEN.getCode())) {
@@ -56,9 +55,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         }
     }
 
-    /**
-     * 한글 출력을 위해 getWriter() 사용
-     */
     private void setResponse(HttpServletResponse response, ExceptionCode exceptionCode) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

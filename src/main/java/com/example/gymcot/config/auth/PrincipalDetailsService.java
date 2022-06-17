@@ -35,66 +35,51 @@ public class PrincipalDetailsService extends DefaultOAuth2UserService implements
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     // 함수 종료시 @AuthenticationPrincipal 어노테이션이 만들어진다
     @Override
-    public UserDetails loadUserByUsername(String memberName) throws UsernameNotFoundException {
-        User userEntity = userRepository.findByUsername(memberName);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User userEntity = userRepository.findByUsername(username);
         if (userEntity != null) return new PrincipalDetails(userEntity); //  PrincipalDetails 타입으로 리턴
         return null;
     }
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        /**
-         *  RegistrationId 로 어떤 OAuth로(Google, Facebook) 로그인 했는지 확인 가능.
-         *  구글 로그인 버튼 클릭 -> 구글 로그인창 -> 로그인 완료 -> code 리턴(OAuth-Client 라이브러리)
-         *  -> AccessToken 요청 -> userRequest 정보 -> loadUser 함수 호출
-         *  -> 구글로부터 회원 프로필을 받아준다.
-         */
 
-        log.info("userRequest.getClientRegistration : " + userRequest.getClientRegistration().toString());
-        log.info("userRequest.getAccessToken : " + userRequest.getAccessToken().getTokenValue());
+        OAuth2User user  = super.loadUser(userRequest);
 
-        OAuth2User oAuth2User  = super.loadUser(userRequest);
-        log.info("super.loadUser(userRequest) : " + oAuth2User.getAttributes());
-
-
-        OAuth2UserInfo oAuth2UserInfo = null;
-
+        OAuth2UserInfo userinfo = null;
         if (userRequest.getClientRegistration().getRegistrationId().equals("google")){
             log.info("Google 로그인 요청");
-            oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
+            userinfo = new GoogleUserInfo(user.getAttributes());
         } else if(userRequest.getClientRegistration().getRegistrationId().equals("facebook")){
             log.info("Facebook 로그인 요청");
-            oAuth2UserInfo = new FacebookUserInfo(oAuth2User.getAttributes());
+            userinfo = new FacebookUserInfo(user.getAttributes());
         } else if(userRequest.getClientRegistration().getRegistrationId().equals("naver")){
             log.info("Naver 로그인 요청");
-            oAuth2UserInfo = new NaverUserInfo((Map)oAuth2User.getAttributes().get("response"));
+            userinfo = new NaverUserInfo((Map)user.getAttributes().get("response"));
         }
 
-        String provider = oAuth2UserInfo.getProvider();
-        String providerId = oAuth2UserInfo.getProviderId();
-        String email = oAuth2UserInfo.getEmail();
-        String memberName = oAuth2UserInfo.getName();
+        String provider = userinfo.getProvider();
+        String providerId = userinfo.getProviderId();
+        String email = userinfo.getEmail();
+        String username = userinfo.getName();
         String OAuthId = provider+"_"+providerId;
-        String password = bCryptPasswordEncoder.encode("getInThere");
-        Role role = Role.ROLE_MEMBER;
+        String password = bCryptPasswordEncoder.encode("gymcot");
 
-        User userEntity = userRepository.findByUsername(memberName);
-
+        User userEntity = userRepository.findByUsername(username);
         if(userEntity == null){
             log.info(provider + " 로그인이 최초입니다. ");
             userEntity = User.builder()
                     .OAuthId(OAuthId)
                     .email(email)
-                    .username(memberName)
-                    .nickName(memberName)
+                    .username(username)
                     .password(password)
-                    .role(role)
+                    .role(Role.ROLE_MEMBER)
                     .provider(provider)
                     .providerId(providerId)
                     .build();
             userRepository.save(userEntity);
         }
         //  PrincipalDetails 타입으로 리턴
-        return new PrincipalDetails(userEntity, oAuth2User.getAttributes());
+        return new PrincipalDetails(userEntity, user.getAttributes());
     }
 }

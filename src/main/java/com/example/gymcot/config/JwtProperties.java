@@ -6,6 +6,8 @@ import com.example.gymcot.config.auth.PrincipalDetails;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Date;
 
 
@@ -18,16 +20,15 @@ public interface JwtProperties {
     String TOKEN_PREFIX = "Bearer ";
     String HEADER_STRING = "Authorization";
 
-    static String genToken(HttpServletResponse response, PrincipalDetails principalDetail) {
+    static String genToken(HttpServletResponse response, PrincipalDetails principalDetail) throws UnsupportedEncodingException {
         String jwtToken = JWT.create()
                 .withSubject(principalDetail.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .withClaim("id", principalDetail.getUser().getId())
                 .withClaim("username", principalDetail.getUser().getUsername())
                 .sign(Algorithm.HMAC512(SECRET));
-        String jwt = TOKEN_PREFIX + jwtToken;
-        response.addHeader(HEADER_STRING, jwt);
-        response.addCookie(new Cookie("Authorization", jwtToken));
+        String jwt = URLEncoder.encode(TOKEN_PREFIX + jwtToken, "UTF-8");
+        response.addCookie(new Cookie("Authorization", jwt));
         return jwt;
     }
 }

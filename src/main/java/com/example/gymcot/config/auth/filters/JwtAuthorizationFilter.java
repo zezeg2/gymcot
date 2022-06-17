@@ -25,12 +25,12 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.NoSuchElementException;
 
-import static com.example.gymcot.config.JwtProperties.SECRET;
-import static com.example.gymcot.config.JwtProperties.genToken;
+import static com.example.gymcot.config.JwtProperties.*;
 
 /*
  시큐리티 필터중 BasicAuthenticationFilter 라는 것이 있음
@@ -69,20 +69,28 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
         System.out.println("인증이나 권한이 필요한 주소가 요청이 됨 ");
 
-        String jwtToken = null;
+        String jwt = null;
         try {
-            Cookie jwtCookie = Arrays.stream(request.getCookies()).filter(cookie -> {
-                return cookie.getName().equals("Authorization");
+            Cookie cookie = Arrays.stream(request.getCookies()).filter(c -> {
+                return c.getName().equals("Authorization");
             }).findAny().get();
 
-            jwtToken = jwtCookie.getValue();
+            jwt = URLDecoder.decode(cookie.getValue(), "UTF-8");
         } catch (NullPointerException | NoSuchElementException e) {
             request.setAttribute("exception", ExceptionCode.NONE_TOKEN.getCode());
             chain.doFilter(request, response);
         }
 
         try {
-            String username = JWT.require(Algorithm.HMAC512(SECRET)).build().verify(jwtToken).getClaim("username").asString();
+            String username = JWT.require(Algorithm.HMAC512(SECRET)).build().verify(jwt).getClaim("username").asString();
+            if (!jwt.startsWith("Bearer")) {
+                request.setAttribute("exception", ExceptionCode.INVALID_TOKEN.getCode());
+                chain.doFilter(request, response);
+                return;
+            }
+
+            jwt.replace(TOKEN_PREFIX, "");
+
             /* 서명이 정상적으로 되었을 때 */
             if (username != null) {
                 User userEntity = userRepository.findByUsername(username);
@@ -92,17 +100,16 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 Authentication authentication = new UsernamePasswordAuthenticationToken(principalDetail, null, principalDetail.getAuthorities());
                 setAuthority(authentication);
 
-
                 chain.doFilter(request, response);
             }
-//            리멤버 미 로직 추가 try catch
+
         } catch (Exception fe) {
 
             if (fe.getClass() == TokenExpiredException.class) {
                 try {
                     Authentication authentication = rememberMeServices.autoLogin(request, response);
                     PrincipalDetails principalDetail = (PrincipalDetails) authentication.getPrincipal();
-                    String jwt = genToken(response, principalDetail);
+                    genToken(response, principalDetail);
                     setAuthority(authentication);
                     chain.doFilter(request, response);
 
@@ -110,7 +117,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 } catch (NullPointerException se) {
                     SecurityContextHolder.clearContext();
                     request.setAttribute("exception", ExceptionCode.EXPIRED_TOKEN.getCode());
-//                    onUnsuccessfulAuthentication(request, response, se);
                     chain.doFilter(request, response);
                 }
 

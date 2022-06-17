@@ -59,27 +59,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .exceptionHandling()
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
-
-//                .formLogin(login -> login.loginPage("/loginForm")
-//                        .loginProcessingUrl("/login")
-//                        .permitAll()// /login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행
-//                        .defaultSuccessUrl("/")
-//                        .failureUrl("/login-error"))
-
                 .and()
+
+                .formLogin(login -> login
+                        .permitAll()// /login 주소가 호출이 되면 시큐리티가 낚아채서 대신 로그인을 진행
+                        .defaultSuccessUrl("/")
+                        .failureUrl("/login-error"))
+
                 .oauth2Login(login ->
                         login.successHandler(oAuthSuccessHandler).userInfoEndpoint()
                                 .userService(principalDetailsService))
-
-//                .rememberMe(r -> r
-//                        .rememberMeServices(rememberMeServices)
-//                )
 
                 .logout()
                 .addLogoutHandler((LogoutHandler) rememberMeServices)
                 .logoutSuccessUrl("/")
                 .deleteCookies("Authorization", "remember-me")
-
 
                 .and()
                 .sessionManagement().disable();
