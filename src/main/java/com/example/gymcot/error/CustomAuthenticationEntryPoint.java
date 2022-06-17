@@ -11,11 +11,11 @@ import java.io.IOException;
 
 @Component
 @Slf4j
-public class SecurityFilterChainExceptionEntryPoint implements AuthenticationEntryPoint {
+public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
-        String exception = (String)request.getAttribute("exception");
+        String exception = (String) request.getAttribute("exception");
         ExceptionCode exceptionCode;
 
         log.debug("log: exception: {} ", exception);
@@ -23,7 +23,7 @@ public class SecurityFilterChainExceptionEntryPoint implements AuthenticationEnt
         /**
          * 토큰 없는 경우
          */
-        if(exception == ExceptionCode.NONE_TOKEN.getCode()) {
+        if (exception.equals(ExceptionCode.NONE_TOKEN.getCode())) {
             exceptionCode = ExceptionCode.NONE_TOKEN;
             setResponse(response, exceptionCode);
             return;
@@ -32,8 +32,17 @@ public class SecurityFilterChainExceptionEntryPoint implements AuthenticationEnt
         /**
          * 토큰 만료된 경우
          */
-        if(exception.equals(ExceptionCode.EXPIRED_TOKEN.getCode())) {
+        if (exception.equals(ExceptionCode.EXPIRED_TOKEN.getCode())) {
             exceptionCode = ExceptionCode.EXPIRED_TOKEN;
+            setResponse(response, exceptionCode);
+            return;
+        }
+
+        /**
+         * 최초 로그인 실패(아이디 및 비밀번호 불일치)
+         */
+        if (exception.equals(ExceptionCode.NOT_FOUND_USER.getCode())) {
+            exceptionCode = ExceptionCode.NOT_FOUND_USER;
             setResponse(response, exceptionCode);
             return;
         }
@@ -41,7 +50,7 @@ public class SecurityFilterChainExceptionEntryPoint implements AuthenticationEnt
         /**
          * 토큰 시그니처가 다른 경우
          */
-        if(exception.equals(ExceptionCode.INVALID_TOKEN.getCode())) {
+        if (exception.equals(ExceptionCode.INVALID_TOKEN.getCode())) {
             exceptionCode = ExceptionCode.INVALID_TOKEN;
             setResponse(response, exceptionCode);
         }
@@ -50,14 +59,14 @@ public class SecurityFilterChainExceptionEntryPoint implements AuthenticationEnt
     /**
      * 한글 출력을 위해 getWriter() 사용
      */
-
     private void setResponse(HttpServletResponse response, ExceptionCode exceptionCode) throws IOException {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter().println("{ \"message\" : \"" + exceptionCode.getMessage()
-                + "\", \"code\" : \"" +  exceptionCode.getCode()
+                + "\", \"code\" : \"" + exceptionCode.getCode()
                 + "\", \"status\" : " + exceptionCode.getMessage()
-                );
+                + "}"
+        );
     }
 
 }

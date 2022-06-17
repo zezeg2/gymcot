@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ExceptionCode {
 
-    NOT_FOUNT_USER("1000", "Not Found User"),
+    NOT_FOUND_USER("1000", "Not Found User"),
     INVALID_INPUT_VALUE("2000", "Invalid Input Value"),
     INVALID_EXPECTED_TYPE("2001", "Invalid Expected Type"),
     METHOD_NOT_ALLOWED("3000", "Method Not Allowed"),

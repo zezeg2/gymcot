@@ -3,10 +3,13 @@ package com.example.gymcot.config.auth.filters;
 
 import com.example.gymcot.config.auth.PrincipalDetails;
 import com.example.gymcot.domain.user.User;
+import com.example.gymcot.error.CustomAuthenticationFailureHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -47,47 +50,44 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("-----------------------  JwtAuthenticationFilter  -----------------------");
         try {
             User user;
-            if (request.getContentType().equals("application/x-www-form-urlencoded")){
-                String username = obtainUsername(request);
-                username = (username != null) ? username : "";
-                username = username.trim();
-                String password = obtainPassword(request);
-                password = (password != null) ? password : "";
-                user = User.builder()
-                        .username(username)
-                        .password(password)
-                        .build();
-            } else{
-                ObjectMapper om = new ObjectMapper();
-                user = om.readValue(request.getInputStream(), User.class);
-            }
+            ObjectMapper om = new ObjectMapper();
+            user = om.readValue(request.getInputStream(), User.class);
+
             log.info("Input Value : {} ", user.toString());
 
-            UsernamePasswordAuthenticationToken authenticationToken
-                    = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
-
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
 
             Authentication authentication = super.getAuthenticationManager().authenticate(authenticationToken);
             PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
             log.info("Login successful : {}", principalDetails.getUser().getUsername());
-
             return authentication;
+
+        } catch (InternalAuthenticationServiceException | BadCredentialsException e) {
+            setAuthenticationFailureHandler(new CustomAuthenticationFailureHandler());
+
+            try {
+                unsuccessfulAuthentication(request, response, e);
+            } catch (IOException | ServletException ex) {
+                ex.printStackTrace();
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        log.info("Login Request Denied");
         return null;
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain
+            chain, Authentication authResult) throws IOException, ServletException {
         PrincipalDetails principalDetail = (PrincipalDetails) authResult.getPrincipal();
 
         /* Hash 암호방식 */
-        String jwt = genToken(response,principalDetail);
+        String jwt = genToken(response, principalDetail);
         log.info("Authentication Header : {}", jwt);
         super.setRememberMeServices(rememberMeServices);
         super.successfulAuthentication(request, response, chain, authResult);
     }
-
 }

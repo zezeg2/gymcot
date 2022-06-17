@@ -4,7 +4,7 @@ import com.example.gymcot.config.auth.OAuthSuccessHandler;
 import com.example.gymcot.config.auth.PrincipalDetailsService;
 import com.example.gymcot.config.auth.filters.JwtAuthenticationFilter;
 import com.example.gymcot.config.auth.filters.JwtAuthorizationFilter;
-import com.example.gymcot.error.SecurityFilterChainExceptionEntryPoint;
+import com.example.gymcot.error.CustomAuthenticationEntryPoint;
 import com.example.gymcot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,7 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
-@EnableWebSecurity(debug = true) // 스프링 시큐리티 필터가 스프링 필터체인에 등록된다
+@EnableWebSecurity//(debug = true) // 스프링 시큐리티 필터가 스프링 필터체인에 등록된다
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @RequiredArgsConstructor
 @Slf4j
@@ -46,9 +46,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .httpBasic().disable()
                 .addFilter(corsFilter)
-                .addFilter(authenticationFilter) // AuthenticationManager
-                .addFilter(authorizationFilter)
 
+                .addFilter(authenticationFilter)
+                .addFilter(authorizationFilter)
                 .authorizeRequests(request ->
                         request.mvcMatchers("/", "/css/**", "/scripts/**", "/plugin/**", "/fonts/**", "/v2/**", "/configuration/**", "/swagger*/**", "/webjars/**", "/swagger-resources/**").permitAll()
                                 .antMatchers("/api/v1/member/**").access("hasRole('ROLE_MEMBER')")
@@ -57,7 +57,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                                 .anyRequest().permitAll()
                 )
 
-                .exceptionHandling().authenticationEntryPoint(new SecurityFilterChainExceptionEntryPoint())
+                .exceptionHandling()
+                .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
 
 //                .formLogin(login -> login.loginPage("/loginForm")
 //                        .loginProcessingUrl("/login")
@@ -70,9 +71,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         login.successHandler(oAuthSuccessHandler).userInfoEndpoint()
                                 .userService(principalDetailsService))
 
-                .rememberMe(r -> r
-                        .rememberMeServices(rememberMeServices)
-                )
+//                .rememberMe(r -> r
+//                        .rememberMeServices(rememberMeServices)
+//                )
 
                 .logout()
                 .addLogoutHandler((LogoutHandler) rememberMeServices)
