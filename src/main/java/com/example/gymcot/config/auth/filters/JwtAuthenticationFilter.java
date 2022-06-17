@@ -4,6 +4,7 @@ package com.example.gymcot.config.auth.filters;
 import com.example.gymcot.config.auth.PrincipalDetails;
 import com.example.gymcot.domain.user.User;
 import com.example.gymcot.error.CustomAuthenticationFailureHandler;
+import com.example.gymcot.error.ExceptionCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +67,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             setAuthenticationFailureHandler(new CustomAuthenticationFailureHandler());
 
             try {
+                request.setAttribute("exception", ExceptionCode.NOT_FOUND_USER.getCode());
                 unsuccessfulAuthentication(request, response, e);
             } catch (IOException | ServletException ex) {
                 ex.printStackTrace();
