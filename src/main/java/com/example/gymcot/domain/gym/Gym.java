@@ -19,9 +19,23 @@ public class Gym {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private String title;
 
-    private String location;
+    private String link;
+
+    private String category;
+
+    private String description;
+
+    private String telephone;
+
+    private String address;
+
+    private String loadAddress;
+
+    private int mapx;
+
+    private int mapy;
 
     private boolean approved;
 

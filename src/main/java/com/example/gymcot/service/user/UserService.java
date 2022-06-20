@@ -1,6 +1,5 @@
 package com.example.gymcot.service.user;
 
-import com.example.gymcot.domain.gym.Gym;
 import com.example.gymcot.domain.gym.GymDto;
 import com.example.gymcot.domain.user.Role;
 import com.example.gymcot.domain.user.User;
@@ -64,9 +63,9 @@ public class UserService {
         return user;
     }
 
-    public void setGym(Long id, Gym gym) {
+    public void setGym(Long id, Long gymId) {
         User findUser = userRepository.findById(id).get();
-        findUser.setGym(gym);
+        findUser.setGym(gymRepository.findById(gymId).get());
         userRepository.save(findUser);
     }
 

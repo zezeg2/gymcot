@@ -1,4 +1,4 @@
-package com.example.gymcot.controller;
+package com.example.gymcot.controller.user;
 
 import com.example.gymcot.domain.user.User;
 import com.example.gymcot.domain.user.UserUpdateDto;

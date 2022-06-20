@@ -1,4 +1,4 @@
-package com.example.gymcot.controller;
+package com.example.gymcot.controller.user;
 
 import com.example.gymcot.config.auth.PrincipalDetails;
 import com.example.gymcot.repository.UserRepository;

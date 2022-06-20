@@ -2,24 +2,42 @@ package com.example.gymcot.domain.gym;
 
 import lombok.*;
 
-import javax.validation.constraints.NotNull;
-
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class GymDto {
 
-    @NotNull
-    private String name;
+    private String title;
 
-    @NotNull
-    private String location;
+    private String link;
+
+    private String category;
+
+    private String description;
+
+    private String telephone;
+
+    private String address;
+
+    private String roadAddress;
+
+    private int mapx;
+
+    private int mapy;
+
 
     public Gym toEntity(){
         return Gym.builder()
-                .name(name)
-                .location(location)
+                .title(title)
+                .link(link)
+                .category(category)
+                .description(description)
+                .telephone(telephone)
+                .address(address)
+                .loadAddress(roadAddress)
+                .mapx(mapx)
+                .mapy(mapy)
                 .approved(false)
                 .build();
     }

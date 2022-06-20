@@ -1,4 +1,4 @@
-package com.example.gymcot.controller;
+package com.example.gymcot.controller.user;
 
 import com.example.gymcot.domain.user.UserDto;
 import com.example.gymcot.service.user.UserService;
