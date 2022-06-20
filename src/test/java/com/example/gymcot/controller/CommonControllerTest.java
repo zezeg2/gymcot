@@ -94,7 +94,7 @@ class CommonControllerTest {
     @Order(2)
     @DisplayName("joinSuccess")
     void joinSuccess() throws Exception {
-        Map<String, String> input = joinInput("zezeg2", "010-2086-9320", "zezeg2@google.com", "whdqkr003#");
+        Map<String, String> input = joinInput("manager", "010-2086-9320", "manager@google.com", "whdqkr003#");
 
         mockMvc.perform(post("/join")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -182,7 +182,7 @@ class CommonControllerTest {
     @Order(6)
     @Test
     void rememberMeLoginTest() throws Exception {
-        Map<String, String> input = loginInput("zezeg2", "whdqkr003#");
+        Map<String, String> input = loginInput("zezeg2", "whdqkr003#$");
         Cookie[] cookies = mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input))

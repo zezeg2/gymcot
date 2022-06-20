@@ -16,11 +16,9 @@ import javax.validation.Valid;
 @RequestMapping("/api/v1")
 public class MemberApiController extends UserApiController {
 
-    private final AuthenticationManager authenticationManager;
+    public MemberApiController(AuthenticationManager authenticationManager, UserRepository userRepository, UserService userService) {
+        super(authenticationManager, userRepository, userService);
 
-    public MemberApiController(UserRepository userRepository, UserService userService, AuthenticationManager authenticationManager) {
-        super(userRepository, userService);
-        this.authenticationManager = authenticationManager;
     }
 
     @GetMapping("/member")
@@ -29,11 +27,11 @@ public class MemberApiController extends UserApiController {
     }
 
     @PostMapping("/member")
-    public void updateMember(Authentication authentication, @RequestBody @Valid UserUpdateDto userDto) {
+    public User updateMember(Authentication authentication, @RequestBody @Valid UserUpdateDto userDto) {
         User user = userService.update(getSessionId(authentication), userDto);
         Authentication updatedAuthentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(updatedAuthentication);
-
+        return user;
     }
 
     @PostMapping("/member/attend")

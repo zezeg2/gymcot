@@ -76,8 +76,8 @@ public class UserService {
     }
 
 
-    public void changeRole(Long id, String role) {
-        User findUser = userRepository.findById(id).get();
+    public void changeRole(String username, String role) {
+        User findUser = userRepository.findByUsername(username);
         if (role.equals("manager")) {
             findUser.setRole(Role.ROLE_MANAGER);
         }
@@ -85,7 +85,7 @@ public class UserService {
             findUser.setRole(Role.ROLE_ADMIN);
         }
         else
-            return;
+            findUser.setRole(Role.ROLE_MEMBER);;
     }
 
     public void enrollGym(GymDto gymDto) {
