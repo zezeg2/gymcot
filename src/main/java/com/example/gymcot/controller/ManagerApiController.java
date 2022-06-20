@@ -2,14 +2,13 @@ package com.example.gymcot.controller;
 
 import com.example.gymcot.domain.gym.GymDto;
 import com.example.gymcot.domain.user.User;
-import com.example.gymcot.domain.user.UserDto;
+import com.example.gymcot.domain.user.UserUpdateDto;
 import com.example.gymcot.repository.UserRepository;
 import com.example.gymcot.service.user.UserService;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/manager")
@@ -24,7 +23,7 @@ public class ManagerApiController extends UserApiController {
     }
 
     @PostMapping
-    public void updateManager(Authentication authentication, UserDto userDto){
+    public void updateManager(Authentication authentication, @RequestBody @Valid UserUpdateDto userDto){
         userService.update(getSessionId(authentication), userDto);
     }
 

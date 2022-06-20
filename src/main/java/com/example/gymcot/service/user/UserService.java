@@ -5,6 +5,7 @@ import com.example.gymcot.domain.gym.GymDto;
 import com.example.gymcot.domain.user.Role;
 import com.example.gymcot.domain.user.User;
 import com.example.gymcot.domain.user.UserDto;
+import com.example.gymcot.domain.user.UserUpdateDto;
 import com.example.gymcot.repository.GymRepository;
 import com.example.gymcot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,15 +26,15 @@ public class UserService {
 
     private final BCryptPasswordEncoder encoder;
 
-    private void validateDuplicateEmail(User user) throws IllegalArgumentException {
-        List<User> findUser = userRepository.findByEmail(user.getEmail());
+    private void validateDuplicateEmail(String email) throws IllegalArgumentException {
+        List<User> findUser = userRepository.findByEmail(email);
         if (findUser.size() >= 3) {
             throw new IllegalArgumentException("같은 이메일로는 최대 3개의 계정까지만 허용됩니다");
         }
     }
 
-    private void validateDuplicateUsername(User user) throws IllegalArgumentException{
-        User findUser = userRepository.findByUsername(user.getUsername());
+    private void validateDuplicateUsername(String username) throws IllegalArgumentException{
+        User findUser = userRepository.findByUsername(username);
         if (findUser != null) {
             throw new IllegalArgumentException("이미 존재하는 닉네임 입니다.");
         }
@@ -41,24 +42,26 @@ public class UserService {
 
     public void join(UserDto userDto) {
         User user = userDto.toEntity();
-        validateDuplicateUsername(user);
-        validateDuplicateEmail(user);
+        validateDuplicateUsername(user.getUsername());
+        validateDuplicateEmail(user.getEmail());
         user.setRole(Role.ROLE_MEMBER);
         user.setPassword(encoder.encode(user.getPassword()));
         user.setAttendState(false);
         userRepository.save(user);
     }
 
-    public void update(Long id, UserDto userDto) {
+    public User update(Long id, UserUpdateDto userDto) {
         User user = userRepository.findById(id).get();
-        if (userDto.getUsername() != null) {
-            validateDuplicateUsername(user);
-            user.setUsername(userDto.getUsername());
-        }
         if (userDto.getPassword() != null) {
             user.setPassword(encoder.encode(userDto.getPassword()));
         }
         if (userDto.getPhone() != null) user.setPhone(userDto.getPhone());
+
+        if (userDto.getUsername() != null) {
+            validateDuplicateUsername(userDto.getUsername());
+            user.setUsername(userDto.getUsername());
+        }
+        return user;
     }
 
     public void setGym(Long id, Gym gym) {
