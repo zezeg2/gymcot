@@ -1,10 +1,9 @@
 package com.example.gymcot.service.user;
 
-import com.example.gymcot.domain.gym.GymDto;
 import com.example.gymcot.domain.user.Role;
 import com.example.gymcot.domain.user.User;
-import com.example.gymcot.domain.user.UserDto;
-import com.example.gymcot.domain.user.UserUpdateDto;
+import com.example.gymcot.domain.user.UserRequestDto;
+import com.example.gymcot.domain.user.UserResponseDto;
 import com.example.gymcot.repository.GymRepository;
 import com.example.gymcot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -39,8 +39,8 @@ public class UserService {
         }
     }
 
-    public void join(UserDto userDto) {
-        User user = userDto.toEntity();
+    public void join(UserRequestDto userRequestDto) {
+        User user = userRequestDto.toEntity();
         validateDuplicateUsername(user.getUsername());
         validateDuplicateEmail(user.getEmail());
         user.setRole(Role.ROLE_MEMBER);
@@ -49,16 +49,16 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public User update(Long id, UserUpdateDto userDto) {
+    public User update(Long id, UserRequestDto userRequestDto) {
         User user = userRepository.findById(id).get();
-        if (userDto.getPassword() != null) {
-            user.setPassword(encoder.encode(userDto.getPassword()));
+        if (userRequestDto.getPassword() != null) {
+            user.setPassword(encoder.encode(userRequestDto.getPassword()));
         }
-        if (userDto.getPhone() != null) user.setPhone(userDto.getPhone());
+        if (userRequestDto.getPhone() != null) user.setPhone(userRequestDto.getPhone());
 
-        if (userDto.getUsername() != null) {
-            validateDuplicateUsername(userDto.getUsername());
-            user.setUsername(userDto.getUsername());
+        if (userRequestDto.getUsername() != null) {
+            validateDuplicateUsername(userRequestDto.getUsername());
+            user.setUsername(userRequestDto.getUsername());
         }
         return user;
     }
@@ -85,5 +85,25 @@ public class UserService {
         }
         else
             findUser.setRole(Role.ROLE_MEMBER);;
+    }
+
+    public UserResponseDto getUser(Long sessionId) {
+        return userRepository.findById(sessionId).get().toDto();
+    }
+
+    public List<UserResponseDto> managerList() {
+        List<UserResponseDto> results = new ArrayList<>();
+        userRepository.findAllByRoleIs(Role.ROLE_MANAGER).stream().forEach(o -> {
+            results.add(o.toDto());
+        });
+        return results;
+    }
+
+    public List<UserResponseDto> memberList(Long gymId) {
+        List<UserResponseDto> results = new ArrayList<>();
+        userRepository.findAllByGymIdAndRoleIs(gymId, Role.ROLE_MEMBER).stream().forEach(o -> {
+            results.add(o.toDto());
+        });
+        return results;
     }
 }

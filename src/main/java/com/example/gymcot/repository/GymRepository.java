@@ -19,4 +19,6 @@ public interface GymRepository extends JpaRepository<Gym,Long> {
     List<Gym> findAllByApprovedIsFalse();
 
     List<Gym> findAllByApprovedIsTrue();
+
+    Gym findByUserId(Long userId);
 }

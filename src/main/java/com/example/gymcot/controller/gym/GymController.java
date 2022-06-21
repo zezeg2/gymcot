@@ -3,7 +3,6 @@ package com.example.gymcot.controller.gym;
 import com.example.gymcot.config.auth.PrincipalDetails;
 import com.example.gymcot.domain.gym.Gym;
 import com.example.gymcot.domain.gym.GymDto;
-import com.example.gymcot.domain.user.Role;
 import com.example.gymcot.repository.GymRepository;
 import com.example.gymcot.service.user.gym.GymService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -82,9 +81,27 @@ public class GymController {
     }
 
     @PreAuthorize(value = "hasRole('ROLE_MANAGER')")
-    @PostMapping
+    @PostMapping("/enroll")
     public void enroll(Authentication authentication, @RequestBody GymDto gymDto){
         gymService.enroll(getSessionId(authentication), gymDto);
+    }
+
+    @PreAuthorize(value = "hasRole('ROLE_MEMBER')")
+    @PostMapping("my-gym")
+    public GymDto getMyGym(Authentication authentication){
+        return gymService.getMyGym(getSessionId(authentication));
+    }
+
+    @PreAuthorize(value = "hasRole('ROLE_MANAGER')")
+    @PostMapping("/update")
+    public void update(Authentication authentication, @RequestBody GymDto gymDto){
+        gymService.update(getSessionId(authentication), gymDto);
+    }
+
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
+    @DeleteMapping("/delete/{gymId}")
+    public void deleteGym(Authentication authentication, @PathVariable Long gymId){
+        gymRepository.deleteById(gymId);
     }
 
     @PreAuthorize(value = "hasRole('ROLE_ADMIN')")

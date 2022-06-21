@@ -1,6 +1,6 @@
 package com.example.gymcot.controller.user;
 
-import com.example.gymcot.domain.user.UserDto;
+import com.example.gymcot.domain.user.UserRequestDto;
 import com.example.gymcot.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public class CommonController {
 
     @ResponseBody
     @PostMapping("/join")
-    public void join(@RequestBody @Valid UserDto userDto) throws IOException {
-        userService.join(userDto);
+    public void join(@RequestBody @Valid UserRequestDto userRequestDto) throws IOException {
+        userService.join(userRequestDto);
     }
 }

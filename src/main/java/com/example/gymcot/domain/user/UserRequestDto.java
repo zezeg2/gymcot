@@ -11,7 +11,7 @@ import javax.validation.constraints.Pattern;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserDto {
+public class UserRequestDto {
 
     @NotNull
     private String username;
@@ -27,8 +27,6 @@ public class UserDto {
     @NotBlank
     private String email;
 
-    private String provider;
-
     private boolean attendState;
 
     public User toEntity() {
@@ -37,8 +35,8 @@ public class UserDto {
                 .phone(phone)
                 .password(password)
                 .email(email)
-                .provider(provider)
                 .build();
     }
+
 
 }

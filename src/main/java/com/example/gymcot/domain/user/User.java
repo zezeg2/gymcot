@@ -47,4 +47,15 @@ public class User {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gym_id")
     private Gym gym;
+
+    public UserResponseDto toDto(){
+        return UserResponseDto.builder()
+                .id(id)
+                .username(username)
+                .phone(phone)
+                .email(email)
+                .role(role)
+                .attendState(attendState)
+                .build();
+    }
 }

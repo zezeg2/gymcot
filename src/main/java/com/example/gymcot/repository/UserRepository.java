@@ -1,5 +1,6 @@
 package com.example.gymcot.repository;
 
+import com.example.gymcot.domain.user.Role;
 import com.example.gymcot.domain.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,4 +14,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByEmail (String email);
 
     boolean existsByUsername(String username);
+
+    List<User> findAllByRoleIs(Role role);
+
+    List<User> findAllByGymIdAndRoleIs(Long id, Role role);
+
 }

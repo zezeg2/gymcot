@@ -47,4 +47,21 @@ public class GymService {
         });
         return result;
     }
+
+    public void update(Long sessionId, GymDto gymDto) {
+        Gym gym = gymRepository.findByUserId(sessionId);
+        gym.setTitle(gymDto.getTitle());
+        gym.setLink(gymDto.getLink());
+        gym.setCategory(gymDto.getCategory());
+        gym.setDescription(gymDto.getDescription());
+        gym.setTelephone(gymDto.getTelephone());
+        gym.setAddress(gymDto.getAddress());
+        gym.setRoadAddress(gymDto.getRoadAddress());
+        gym.setMapx(gymDto.getMapx());
+        gym.setMapy(gymDto.getMapy());
+    }
+
+    public GymDto getMyGym(Long sessionId) {
+        return gymRepository.findByUserId(sessionId).toDto();
+    }
 }
