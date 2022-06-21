@@ -1,8 +1,8 @@
 package com.example.gymcot.controller.gym;
 
 import com.example.gymcot.config.auth.PrincipalDetails;
-import com.example.gymcot.domain.gym.Gym;
-import com.example.gymcot.domain.gym.GymDto;
+import com.example.gymcot.domain.gym.GymRequestDto;
+import com.example.gymcot.domain.gym.GymResponseDto;
 import com.example.gymcot.repository.GymRepository;
 import com.example.gymcot.service.user.gym.GymService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,7 +42,7 @@ public class GymController {
     }
 
     @GetMapping
-    public List<GymDto> searchGym(@RequestParam String query) {
+    public List<GymResponseDto> searchGym(@RequestParam String query) {
         String encoded = null;
         URI uri = UriComponentsBuilder.fromUriString("https://openapi.naver.com")
                 .path("/v1/search/local.json")
@@ -57,44 +57,59 @@ public class GymController {
 
         ResponseEntity<Object> response = restTemplate.exchange(req, Object.class);
 
-        List<GymDto> gymDtoList = new ArrayList<>();
+        List<GymResponseDto> gymDtoList = new ArrayList<>();
 
         Map<String, Object> result = (Map<String, Object>) response.getBody();
         ArrayList<Object> parsed = (ArrayList<Object>) result.get("items");
         parsed.forEach(o -> {
-            GymDto gymDto = objectMapper.convertValue(o, GymDto.class);
+            GymResponseDto gymDto = objectMapper.convertValue(o, GymResponseDto.class);
             gymDtoList.add(gymDto);
         });
         return gymDtoList;
     }
 
-    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
-    @GetMapping("/pre-enrolled")
-    public List<GymDto> preEnrolledGymList(){
-        return gymService.preEnrolledGymList();
+    @GetMapping("all-list")
+    public List<GymResponseDto> allList(){
+        List<GymResponseDto> results = new ArrayList<>();
+        gymRepository.findAll().stream().forEach(o -> {
+            results.add(o.toDto());
+        });
+        return results;
     }
 
     @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
+    @GetMapping("/pre-enrolled")
+    public List<GymResponseDto> preEnrolledGymList(){
+        return gymService.preEnrolledGymList();
+    }
+
     @GetMapping("/enrolled")
-    public List<GymDto> EnrolledGymList(){
-        return gymService.EnrolledGymList();
+    public List<GymResponseDto> enrolledGymList(){
+        return gymService.enrolledGymList();
+    }
+
+    @GetMapping("/search")
+    public List<GymResponseDto> searcdEnrolledGymList(@RequestParam(required = false) String title,
+                                                      @RequestParam(required = false) String address,
+                                                      @RequestParam(required = false) String roadAddress){
+        return gymService.searchEnrolledGymList(title, address, roadAddress);
     }
 
     @PreAuthorize(value = "hasRole('ROLE_MANAGER')")
     @PostMapping("/enroll")
-    public void enroll(Authentication authentication, @RequestBody GymDto gymDto){
+    public void enroll(Authentication authentication, @RequestBody GymRequestDto gymDto){
         gymService.enroll(getSessionId(authentication), gymDto);
     }
 
     @PreAuthorize(value = "hasRole('ROLE_MEMBER')")
-    @PostMapping("my-gym")
-    public GymDto getMyGym(Authentication authentication){
+    @GetMapping("my-gym")
+    public GymResponseDto getMyGym(Authentication authentication){
         return gymService.getMyGym(getSessionId(authentication));
     }
 
     @PreAuthorize(value = "hasRole('ROLE_MANAGER')")
     @PostMapping("/update")
-    public void update(Authentication authentication, @RequestBody GymDto gymDto){
+    public void update(Authentication authentication, @RequestBody GymRequestDto gymDto){
         gymService.update(getSessionId(authentication), gymDto);
     }
 

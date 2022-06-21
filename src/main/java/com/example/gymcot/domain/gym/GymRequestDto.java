@@ -2,13 +2,12 @@ package com.example.gymcot.domain.gym;
 
 import lombok.*;
 
-@Getter @Setter
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class GymDto {
-
-    private Long id;
+public class GymRequestDto {
 
     private String title;
 

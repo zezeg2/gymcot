@@ -41,8 +41,8 @@ class AdminApiControllerTest {
 
     @BeforeEach
     void setUp() {
-        cookies = new Cookie[]{new Cookie("Authorization", "Bearer+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlkIjo1LCJleHAiOjE2NTU3OTgxMTQsInVzZXJuYW1lIjoiYWRtaW4ifQ.0TAKABrgSaXydCzWCTc-028zKUqgESJubt14zL1ZLe0LYTiwVb9hyL4f3XVG2BfkLXp29DYXMlmESMrBEJBxXg")
-                , new Cookie("remember-me", "Um1xcmhFTDQ2MzkxSEx5WXJFOERRZyUzRCUzRDpNTkhsUVdBUUxoa0RkdFNzeXJ5JTJGQ2clM0QlM0Q")};
+        cookies = new Cookie[]{new Cookie("Authorization", "Bearer+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlkIjo1LCJleHAiOjE2NTU4MDQ0NjUsInVzZXJuYW1lIjoiYWRtaW4ifQ.k8Z5RBMSbrFddyoXuHBok1vRf_YA_4wtQcUDChXpuYNoyjFdhvIeXdHMMNxPc35zeAVwzB8e4knTb6aJjyJiaQ")
+                , new Cookie("remember-me", "bWxiU3FYS3hoc0ppdUtHaTF3S1VSZyUzRCUzRDpSVkpUZ2Z0SE0lMkJTVEQ4V29LOWZzJTJCUSUzRCUzRA")};
     }
 
     @DisplayName("getAdmin")

@@ -1,7 +1,8 @@
 package com.example.gymcot.service.user.gym;
 
 import com.example.gymcot.domain.gym.Gym;
-import com.example.gymcot.domain.gym.GymDto;
+import com.example.gymcot.domain.gym.GymRequestDto;
+import com.example.gymcot.domain.gym.GymResponseDto;
 import com.example.gymcot.domain.user.User;
 import com.example.gymcot.repository.GymRepository;
 import com.example.gymcot.repository.UserRepository;
@@ -20,35 +21,42 @@ public class GymService {
     private final UserRepository userRepository;
     private final GymRepository gymRepository;
 
-    public void enroll(Long userId, GymDto gymdto) {
-        Gym gym = gymdto.toEntity(userId);
-        gymRepository.save(gym);
+    private void validateDuplicatedUser(Long userId) throws IllegalArgumentException{
+        Gym findGym = gymRepository.findByUserId(userId);
+        if (findGym != null) {
+            throw new IllegalArgumentException("이미 헬스장 등록을 완료한 사용자입니다.");
+        }
     }
 
-    public void approve(Long gymId){
+    public void enroll(Long userId, GymRequestDto gymdto) {
+        validateDuplicatedUser(userId);
+        Gym gym = gymdto.toEntity(userId);
+    }
+
+    public void approve(Long gymId) {
         Gym gym = gymRepository.findById(gymId).get();
         gym.setApproved(true);
         User user = userRepository.findById(gym.getUserId()).get();
         user.setGym(gym);
     }
 
-    public List<GymDto> preEnrolledGymList() {
-        List<GymDto> result = new ArrayList<>();
+    public List<GymResponseDto> preEnrolledGymList() {
+        List<GymResponseDto> result = new ArrayList<>();
         gymRepository.findAllByApprovedIsFalse().stream().forEach(o -> {
             result.add(o.toDto());
         });
         return result;
     }
 
-    public List<GymDto> EnrolledGymList() {
-        List<GymDto> result = new ArrayList<>();
+    public List<GymResponseDto> enrolledGymList() {
+        List<GymResponseDto> result = new ArrayList<>();
         gymRepository.findAllByApprovedIsTrue().stream().forEach(o -> {
             result.add(o.toDto());
         });
         return result;
     }
 
-    public void update(Long sessionId, GymDto gymDto) {
+    public void update(Long sessionId, GymRequestDto gymDto) {
         Gym gym = gymRepository.findByUserId(sessionId);
         gym.setTitle(gymDto.getTitle());
         gym.setLink(gymDto.getLink());
@@ -61,7 +69,17 @@ public class GymService {
         gym.setMapy(gymDto.getMapy());
     }
 
-    public GymDto getMyGym(Long sessionId) {
+    public GymResponseDto getMyGym(Long sessionId) {
         return gymRepository.findByUserId(sessionId).toDto();
+    }
+
+    public List<GymResponseDto> searchEnrolledGymList(String title, String address, String roadAddress) {
+        List<GymResponseDto> result = new ArrayList<>();
+        List<Gym> searched = gymRepository.findAllByTitleContainsOrAddressContainsOrRoadAddressContainsAndApprovedIsTrue(title, address, roadAddress);
+
+        searched.stream().forEach(o -> {
+            result.add(o.toDto());
+        });
+        return result;
     }
 }

@@ -44,9 +44,13 @@ public class MemberApiController extends UserApiController {
         userService.toggleState(getSessionId(authentication));
     }
 
+//    @PostMapping("/set-gym")
+//    public void setGym(Authentication authentication, )
+
     @DeleteMapping("delete")
     public void delete(Authentication authentication){
         userRepository.deleteById(getSessionId(authentication));
     }
+
 
 }

@@ -45,8 +45,9 @@ public class Gym {
     @OneToMany(fetch = FetchType.LAZY)
     private List<User> users = new ArrayList<>();
 
-    public GymDto toDto(){
-        return GymDto.builder()
+    public GymResponseDto toDto(){
+        return GymResponseDto.builder()
+                .id(id)
                 .title(title)
                 .link(link)
                 .category(category)

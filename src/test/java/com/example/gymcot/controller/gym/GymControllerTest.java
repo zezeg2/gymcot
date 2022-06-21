@@ -1,6 +1,7 @@
 package com.example.gymcot.controller.gym;
 
 import com.example.gymcot.domain.gym.GymDto;
+import com.example.gymcot.domain.gym.GymRequestDto;
 import com.example.gymcot.repository.GymRepository;
 import com.example.gymcot.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,12 +46,12 @@ class GymControllerTest {
 
     @BeforeEach
     void setUp() {
-        memberCookies = new Cookie[]{ new Cookie("Authorization", "Bearer+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ6ZXplZzIiLCJpZCI6NCwiZXhwIjoxNjU1NzkzMDA5LCJ1c2VybmFtZSI6InplemVnMiJ9.In2jLqOg8Di34N0yV5vz9inznc1eCp9SK2B_ZZf3WEx4t_yWrvFEh2NadcbBKP4e8FTGBKCDmVnkTsZPzuHadQ")
+        memberCookies = new Cookie[]{new Cookie("Authorization", "Bearer+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ6ZXplZzIiLCJpZCI6NCwiZXhwIjoxNjU1NzkzMDA5LCJ1c2VybmFtZSI6InplemVnMiJ9.In2jLqOg8Di34N0yV5vz9inznc1eCp9SK2B_ZZf3WEx4t_yWrvFEh2NadcbBKP4e8FTGBKCDmVnkTsZPzuHadQ")
                 , new Cookie("remember-me", "Vks3a0VOOUc0T2p3RTZLQzFpVzJTdyUzRCUzRDo2OFBSekF5Sjl4bTMwWlh1allhSmd3JTNEJTNE")};
-        managerCookies = new Cookie[]{new Cookie("Authorization", "Bearer+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYW5hZ2VyIiwiaWQiOjYsImV4cCI6MTY1NTc5NDY5NCwidXNlcm5hbWUiOiJtYW5hZ2VyIn0.Lq-4efcbMpgQIkvZGyeFLIOxH_-vgUszYM_CdeW6LybckbCLHHpCiuMfl4ApnPtv9sXWLf70oq_Ue584tRYyFg")
-                , new Cookie("remember-me", "eGFPbnZZc1lyZHdaREpzc1YydVVIQSUzRCUzRDoxQ3ElMkJCaFF2emElMkJTVUpoU2FFS0lQUSUzRCUzRA")};
-        adminCookies = new Cookie[]{new Cookie("Authorization", "Bearer+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlkIjo1LCJleHAiOjE2NTU3OTQ4MjksInVzZXJuYW1lIjoiYWRtaW4ifQ.uLfpS5ZJMlD4LLgxCMg42kOtkdpW-eFf4LG1Y0Pyo8MeHrrUyga2n-06W8bQG3Cd5CDp6_CEK7-ZDMtWkNscDQ")
-                , new Cookie("remember-me", "cU1IenFYSnAlMkI1SVhqcDNYOXIlMkJuM0ElM0QlM0Q6a1BkYWtJNW93MUxZUVlZRmlBdVMlMkJ3JTNEJTNE")};
+        managerCookies = new Cookie[]{new Cookie("Authorization", "Bearer+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtYW5hZ2VyIiwiaWQiOjYsImV4cCI6MTY1NTgwNDU1MywidXNlcm5hbWUiOiJtYW5hZ2VyIn0.WE8BKHBISW8UhgCXZm0RfZsIeVQk9z_SlDmvI1Z4ExzY3R4Vbc4FkJrjfgPMKWqkMEAIL50YV9kR33MwVIlS_Q")
+                , new Cookie("remember-me", "bEJlU014V24waTBrMHZxTUxvcE5tUSUzRCUzRDpZcU9GM0xENUh6YjhYUHpYZFViSXh3JTNEJTNE")};
+        adminCookies = new Cookie[]{new Cookie("Authorization", "Bearer+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlkIjo1LCJleHAiOjE2NTU4MDQ0NjUsInVzZXJuYW1lIjoiYWRtaW4ifQ.k8Z5RBMSbrFddyoXuHBok1vRf_YA_4wtQcUDChXpuYNoyjFdhvIeXdHMMNxPc35zeAVwzB8e4knTb6aJjyJiaQ")
+                , new Cookie("remember-me", "bWxiU3FYS3hoc0ppdUtHaTF3S1VSZyUzRCUzRDpSVkpUZ2Z0SE0lMkJTVEQ4V29LOWZzJTJCUSUzRCUzRA")};
     }
 
     @DisplayName("searchGym")
@@ -65,8 +66,8 @@ class GymControllerTest {
     @DisplayName("enrollTest")
     @Test
     void enrollTest() throws Exception {
-        GymDto gymDto = GymDto.builder()
-                .title("바디스펙트럼3")
+        GymRequestDto gymRequestDto = GymRequestDto.builder()
+                .title("바디스펙트럼5")
                 .link("https://www.bodyspectrum.co.kr/")
                 .category("스포츠,오락>스포츠시설")
                 .description("")
@@ -77,10 +78,10 @@ class GymControllerTest {
                 .mapx(314303)
                 .mapy(544075)
                 .build();
-        mockMvc.perform(post("/api/v1/gym")
+        mockMvc.perform(post("/api/v1/gym/enroll")
                         .contentType(MediaType.APPLICATION_JSON)
                         .cookie(managerCookies)
-                        .content(objectMapper.writeValueAsString(gymDto)))
+                        .content(objectMapper.writeValueAsString(gymRequestDto)))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -88,8 +89,48 @@ class GymControllerTest {
     @DisplayName("approveTest")
     @Test
     void approveTest() throws Exception {
-        mockMvc.perform(post("/api/v1/gym/approve/4")
-                .cookie(adminCookies))
+        mockMvc.perform(post("/api/v1/gym/approve/5")
+                        .cookie(adminCookies))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @DisplayName("preEnrolledList")
+    @Test
+    void preEnrolledList() throws Exception {
+        mockMvc.perform(get("/api/v1/gym/pre-enrolled")
+                        .cookie(adminCookies))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+
+    @DisplayName("EnrolledList")
+    @Test
+    void enrolled() throws Exception {
+        mockMvc.perform(get("/api/v1/gym/enrolled")
+                        .cookie(adminCookies))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @DisplayName("myGym")
+    @Test
+    void myGym() throws Exception {
+        mockMvc.perform(get("/api/v1/gym/my-gym")
+                        .cookie(managerCookies))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @DisplayName("search")
+    @Test
+    void searchedList() throws Exception {
+        mockMvc.perform(get("/api/v1/gym/search")
+                        .cookie(memberCookies)
+                        .param("title", "서초동")
+                        .param("address", "서울")
+                        .param("roadAddress", "서울"))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
