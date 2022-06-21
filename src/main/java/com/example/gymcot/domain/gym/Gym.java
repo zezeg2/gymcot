@@ -31,7 +31,7 @@ public class Gym {
 
     private String address;
 
-    private String loadAddress;
+    private String roadAddress;
 
     private int mapx;
 
@@ -39,7 +39,23 @@ public class Gym {
 
     private boolean approved;
 
+    private Long userId;
+
     @Builder.Default
     @OneToMany(fetch = FetchType.LAZY)
     private List<User> users = new ArrayList<>();
+
+    public GymDto toDto(){
+        return GymDto.builder()
+                .title(title)
+                .link(link)
+                .category(category)
+                .description(description)
+                .telephone(telephone)
+                .address(address)
+                .roadAddress(roadAddress)
+                .mapx(mapx)
+                .mapy(mapy)
+                .build();
+    }
 }

@@ -182,7 +182,7 @@ class CommonControllerTest {
     @Order(6)
     @Test
     void rememberMeLoginTest() throws Exception {
-        Map<String, String> input = loginInput("zezeg2", "whdqkr003#$");
+        Map<String, String> input = loginInput("admin", "whdqkr003##");
         Cookie[] cookies = mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input))

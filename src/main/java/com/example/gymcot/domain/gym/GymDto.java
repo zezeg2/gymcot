@@ -26,8 +26,7 @@ public class GymDto {
 
     private int mapy;
 
-
-    public Gym toEntity(){
+    public Gym toEntity(Long userId){
         return Gym.builder()
                 .title(title)
                 .link(link)
@@ -35,10 +34,11 @@ public class GymDto {
                 .description(description)
                 .telephone(telephone)
                 .address(address)
-                .loadAddress(roadAddress)
+                .roadAddress(roadAddress)
                 .mapx(mapx)
                 .mapy(mapy)
                 .approved(false)
+                .userId(userId)
                 .build();
     }
 }

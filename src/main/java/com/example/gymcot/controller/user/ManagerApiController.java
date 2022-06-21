@@ -32,10 +32,4 @@ public class ManagerApiController extends UserApiController {
         SecurityContextHolder.getContext().setAuthentication(updatedAuthentication);
         return user;
     }
-
-    @PostMapping("/enrolGym")
-    public void enrollGym(GymDto gymDto){
-        userService.enrollGym(gymDto);
-    }
-
 }

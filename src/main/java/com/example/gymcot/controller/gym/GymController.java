@@ -3,12 +3,14 @@ package com.example.gymcot.controller.gym;
 import com.example.gymcot.config.auth.PrincipalDetails;
 import com.example.gymcot.domain.gym.Gym;
 import com.example.gymcot.domain.gym.GymDto;
+import com.example.gymcot.domain.user.Role;
 import com.example.gymcot.repository.GymRepository;
 import com.example.gymcot.service.user.gym.GymService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -67,15 +69,28 @@ public class GymController {
         return gymDtoList;
     }
 
-    @PostMapping
-    public void enroll(Authentication authentication, @RequestBody GymDto gymDto){
-        Gym gym = gymDto.toEntity();
-        gymService.enroll(getSessionId(authentication), gym);
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
+    @GetMapping("/pre-enrolled")
+    public List<GymDto> preEnrolledGymList(){
+        return gymService.preEnrolledGymList();
     }
 
-    @PostMapping("/approve/{gymId}/{userId}")
-    public void approve( @PathVariable Long userId, @PathVariable Long gymId){
-        gymService.approve(userId, gymId);
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
+    @GetMapping("/enrolled")
+    public List<GymDto> EnrolledGymList(){
+        return gymService.EnrolledGymList();
+    }
+
+    @PreAuthorize(value = "hasRole('ROLE_MANAGER')")
+    @PostMapping
+    public void enroll(Authentication authentication, @RequestBody GymDto gymDto){
+        gymService.enroll(getSessionId(authentication), gymDto);
+    }
+
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
+    @PostMapping("/approve/{gymId}")
+    public void approve(@PathVariable Long gymId){
+        gymService.approve(gymId);
     }
 
     public Long getSessionId(Authentication authentication){

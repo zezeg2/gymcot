@@ -86,8 +86,4 @@ public class UserService {
         else
             findUser.setRole(Role.ROLE_MEMBER);;
     }
-
-    public void enrollGym(GymDto gymDto) {
-        gymRepository.save(gymDto.toEntity());
-    }
 }

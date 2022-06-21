@@ -26,7 +26,7 @@ public class SecurityBeans {
     @Bean
     RoleHierarchy roleHierarchy() {
         RoleHierarchyImpl roleHierarchy = new RoleHierarchyImpl();
-        roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_MANAGER > ROLE_MEMBER > ROLE_GUEST");
+        roleHierarchy.setHierarchy("ROLE_ADMIN > ROLE_MANAGER > ROLE_MEMBER");
         return roleHierarchy;
     }
 
@@ -60,7 +60,7 @@ public class SecurityBeans {
                         principalDetailsService,
                         tokenRepository()
                 );
-        service.setTokenValiditySeconds(60*24*30);
+        service.setTokenValiditySeconds(60*60*24*30);
         return service;
     }
 }

@@ -32,7 +32,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private boolean attendState = false;
+    private boolean attendState;
 
     @CreationTimestamp
     private Timestamp createdAt;
