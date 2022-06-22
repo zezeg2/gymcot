@@ -89,7 +89,7 @@ public class GymController {
     }
 
     @GetMapping("/search")
-    public List<GymResponseDto> searcdEnrolledGymList(@RequestParam(required = false) String title,
+    public List<GymResponseDto> searcdEnrolledGymList(@RequestParam(required = true) String title,
                                                       @RequestParam(required = false) String address,
                                                       @RequestParam(required = false) String roadAddress){
         return gymService.searchEnrolledGymList(title, address, roadAddress);

@@ -128,9 +128,9 @@ class GymControllerTest {
     void searchedList() throws Exception {
         mockMvc.perform(get("/api/v1/gym/search")
                         .cookie(memberCookies)
-                        .param("title", "서초동")
-                        .param("address", "서울")
-                        .param("roadAddress", "서울"))
+                        .param("title", "바디")
+                        .param("roadAddress", "서울")
+                        )
                 .andExpect(status().isOk())
                 .andDo(print());
     }

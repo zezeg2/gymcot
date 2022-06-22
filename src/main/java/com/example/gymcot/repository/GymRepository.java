@@ -2,8 +2,10 @@ package com.example.gymcot.repository;
 
 import com.example.gymcot.domain.gym.Gym;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
+import javax.validation.constraints.Null;
 import java.util.List;
 
 @Repository
@@ -19,7 +21,9 @@ public interface GymRepository extends JpaRepository<Gym,Long> {
 
     List<Gym> findAllByApprovedIsTrue();
 
-    List<Gym> findAllByTitleContainsOrAddressContainsOrRoadAddressContainsAndApprovedIsTrue(String title, String address, String roadAddress);
+    List<Gym> findAllByTitleContainsAndAddressContainsAndApprovedIsTrue(String title, String address);
+
+    List<Gym> findAllByTitleContainsAndRoadAddressContainsAndApprovedIsTrue(String title, String roadAddress);
 
     Gym findByUserId(Long userId);
 }

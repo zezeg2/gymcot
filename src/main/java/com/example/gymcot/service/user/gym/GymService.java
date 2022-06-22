@@ -74,9 +74,19 @@ public class GymService {
     }
 
     public List<GymResponseDto> searchEnrolledGymList(String title, String address, String roadAddress) {
-        List<GymResponseDto> result = new ArrayList<>();
-        List<Gym> searched = gymRepository.findAllByTitleContainsOrAddressContainsOrRoadAddressContainsAndApprovedIsTrue(title, address, roadAddress);
+        if (address == null && roadAddress == null){
+            throw new IllegalArgumentException("동/읍/면 혹은 도로명은 필수 입력사항입니다.");
+        }
 
+        List<Gym> searched;
+        List<GymResponseDto> result = new ArrayList<>();
+
+        if (address == null){
+            searched = gymRepository.findAllByTitleContainsAndRoadAddressContainsAndApprovedIsTrue(title, roadAddress);
+        }
+        else{
+            searched = gymRepository.findAllByTitleContainsAndAddressContainsAndApprovedIsTrue(title, address);
+        }
         searched.stream().forEach(o -> {
             result.add(o.toDto());
         });
