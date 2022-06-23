@@ -4,7 +4,7 @@ import com.example.gymcot.config.auth.PrincipalDetails;
 import com.example.gymcot.domain.gym.GymRequestDto;
 import com.example.gymcot.domain.gym.GymResponseDto;
 import com.example.gymcot.repository.GymRepository;
-import com.example.gymcot.service.user.gym.GymService;
+import com.example.gymcot.service.gym.GymService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.RequestEntity;
@@ -71,9 +71,7 @@ public class GymController {
     @GetMapping("all-list")
     public List<GymResponseDto> allList(){
         List<GymResponseDto> results = new ArrayList<>();
-        gymRepository.findAll().stream().forEach(o -> {
-            results.add(o.toDto());
-        });
+        gymRepository.findAll().stream().forEach(o -> results.add(o.toDto()));
         return results;
     }
 
@@ -89,7 +87,7 @@ public class GymController {
     }
 
     @GetMapping("/search")
-    public List<GymResponseDto> searcdEnrolledGymList(@RequestParam(required = true) String title,
+    public List<GymResponseDto> searcdEnrolledGymList(@RequestParam String title,
                                                       @RequestParam(required = false) String address,
                                                       @RequestParam(required = false) String roadAddress){
         return gymService.searchEnrolledGymList(title, address, roadAddress);

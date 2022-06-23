@@ -18,9 +18,8 @@ public abstract class Relation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private User fromUser;
+    private Long fromUserId;
 
-    @OneToOne
-    private User toUser;
+    @ManyToOne
+    private User user;
 }

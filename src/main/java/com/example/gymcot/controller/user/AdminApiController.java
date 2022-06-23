@@ -23,7 +23,7 @@ public class AdminApiController extends UserApiController {
         super(authenticationManager, userRepository, userService);
     }
 
-    @PostMapping
+    @PutMapping
     public void updateAdmin(Authentication authentication, @RequestBody @Valid UserRequestDto userDto){
         User user = userService.update(getSessionId(authentication), userDto);
         Authentication updatedAuthentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));

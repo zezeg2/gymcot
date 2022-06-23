@@ -2,6 +2,9 @@ package com.example.gymcot.domain.user;
 
 import lombok.*;
 
+import java.sql.Timestamp;
+
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -22,5 +25,11 @@ public class UserResponseDto {
     private boolean attendState;
 
     private String provider;
+
+    private boolean enrolled;
+
+    private Timestamp latestAttendAt;
+
+    private Timestamp latestFinishAt;
 
 }

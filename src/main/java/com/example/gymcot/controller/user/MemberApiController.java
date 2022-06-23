@@ -19,7 +19,6 @@ public class MemberApiController extends UserApiController {
 
     public MemberApiController(AuthenticationManager authenticationManager, UserRepository userRepository, UserService userService) {
         super(authenticationManager, userRepository, userService);
-
     }
 
     @GetMapping
@@ -27,25 +26,22 @@ public class MemberApiController extends UserApiController {
         return userService.getUser(getSessionId(authentication));
     }
 
-    @PostMapping
+    @PutMapping
     public void updateMember(Authentication authentication, @RequestBody @Valid UserRequestDto userDto) {
         User user = userService.update(getSessionId(authentication), userDto);
         Authentication updatedAuthentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(updatedAuthentication);
     }
 
-    @PostMapping("/gym/{gymId}")
+    @PutMapping("/gym/{gymId}")
     public void setGym(Authentication authentication, @PathVariable Long gymId){
         userService.setGym(getSessionId(authentication), gymId);
     }
 
-    @PostMapping("/attend")
+    @PutMapping("/attend")
     public void changeState(Authentication authentication) {
         userService.toggleState(getSessionId(authentication));
     }
-
-//    @PostMapping("/set-gym")
-//    public void setGym(Authentication authentication, )
 
     @DeleteMapping("delete")
     public void delete(Authentication authentication){

@@ -27,17 +27,31 @@ public class ManagerApiController extends UserApiController {
         return userService.getUser(getSessionId(authentication));
     }
 
-    @PostMapping
+    @PutMapping
     public void updateManager(Authentication authentication, @RequestBody @Valid UserRequestDto userDto){
         User user = userService.update(getSessionId(authentication), userDto);
         Authentication updatedAuthentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(updatedAuthentication);
     }
 
-    @GetMapping("/members")
-    public List<UserResponseDto> memberList(Authentication authentication){
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        return userService.memberList(principal.getUser().getGym().getId());
+    @PutMapping("/approve-member/{username}")
+    public void approveMember(@PathVariable String username){
+        userService.approveMember(username);
+    }
+
+    @PutMapping("/expel-member/{username}")
+    public void expelMember(@PathVariable String username){
+        userService.expelMember(username);
+    }
+
+    @GetMapping("waiting-list")
+    public List<UserResponseDto> waitingList(Authentication authentication){
+        return userService.waitingList(getSessionId(authentication));
+    }
+
+    @GetMapping("enrolled-user-list")
+    public List<UserResponseDto> waintingList(Authentication authentication){
+        return userService.enrolledList(getSessionId(authentication));
     }
 
     @DeleteMapping("delete")

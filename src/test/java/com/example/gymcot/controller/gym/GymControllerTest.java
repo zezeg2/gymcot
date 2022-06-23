@@ -1,6 +1,5 @@
 package com.example.gymcot.controller.gym;
 
-import com.example.gymcot.domain.gym.GymDto;
 import com.example.gymcot.domain.gym.GymRequestDto;
 import com.example.gymcot.repository.GymRepository;
 import com.example.gymcot.repository.UserRepository;
@@ -17,7 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.servlet.http.Cookie;
 
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -129,8 +127,7 @@ class GymControllerTest {
         mockMvc.perform(get("/api/v1/gym/search")
                         .cookie(memberCookies)
                         .param("title", "바디")
-                        .param("roadAddress", "서울")
-                        )
+                        .param("roadAddress", "서울"))
                 .andExpect(status().isOk())
                 .andDo(print());
     }

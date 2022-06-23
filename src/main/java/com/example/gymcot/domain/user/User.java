@@ -40,13 +40,19 @@ public class User {
     @UpdateTimestamp
     private Timestamp updatedAt;
 
+    private Timestamp latestAttendAt;
+
+    private Timestamp latestFinishAt;
+
     private String provider;
 
     private String providerId;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gym_id")
     private Gym gym;
+
+    private boolean enrolled;
 
     public UserResponseDto toDto(){
         return UserResponseDto.builder()
@@ -56,6 +62,9 @@ public class User {
                 .email(email)
                 .role(role)
                 .attendState(attendState)
+                .enrolled(enrolled)
+                .latestAttendAt(latestAttendAt)
+                .latestFinishAt(latestFinishAt)
                 .build();
     }
 }

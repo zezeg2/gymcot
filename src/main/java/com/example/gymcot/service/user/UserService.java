@@ -11,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +47,7 @@ public class UserService {
         user.setRole(Role.ROLE_MEMBER);
         user.setPassword(encoder.encode(user.getPassword()));
         user.setAttendState(false);
+        user.setEnrolled(false);
         userRepository.save(user);
     }
 
@@ -71,6 +73,12 @@ public class UserService {
 
     public void toggleState(Long id) {
         User user = userRepository.findById(id).get();
+        if (user.isAttendState() == false){
+            user.setLatestAttendAt(new Timestamp(System.currentTimeMillis()));
+            user.setLatestFinishAt(null);
+        } else{
+            user.setLatestFinishAt(new Timestamp(System.currentTimeMillis()));
+        }
         user.setAttendState(!user.isAttendState());
     }
 
@@ -99,11 +107,31 @@ public class UserService {
         return results;
     }
 
-    public List<UserResponseDto> memberList(Long gymId) {
+    public void approveMember(String username) {
+        User user = userRepository.findByUsername(username);
+        user.setEnrolled(true);
+    }
+
+    public void expelMember(String username){
+        User user = userRepository.findByUsername(username);
+        user.setEnrolled(false);
+    }
+
+    public List<UserResponseDto> waitingList(Long sessionId) {
         List<UserResponseDto> results = new ArrayList<>();
-        userRepository.findAllByGymIdAndRoleIs(gymId, Role.ROLE_MEMBER).stream().forEach(o -> {
+        Long gymId = userRepository.findById(sessionId).get().getGym().getId();
+        userRepository.findAllByEnrolledIsFalseAndGymIdIs(gymId).stream().forEach(o -> {
             results.add(o.toDto());
         });
-        return results;
+        return  results;
+    }
+
+    public List<UserResponseDto> enrolledList(Long sessionId) {
+        List<UserResponseDto> results = new ArrayList<>();
+        Long gymId = userRepository.findById(sessionId).get().getGym().getId();
+        userRepository.findAllByEnrolledIsTrueAndGymIdIs(gymId).stream().forEach(o -> {
+            results.add(o.toDto());
+        });
+        return  results;
     }
 }
