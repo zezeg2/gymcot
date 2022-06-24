@@ -1,9 +1,11 @@
 package com.example.gymcot.service.user;
 
+import com.example.gymcot.domain.diary.Diary;
 import com.example.gymcot.domain.user.Role;
 import com.example.gymcot.domain.user.User;
 import com.example.gymcot.domain.user.UserRequestDto;
 import com.example.gymcot.domain.user.UserResponseDto;
+import com.example.gymcot.repository.DiaryRepository;
 import com.example.gymcot.repository.GymRepository;
 import com.example.gymcot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,9 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +29,8 @@ public class UserService {
 
     private final GymRepository gymRepository;
 
+    private final DiaryRepository diaryRepository;
+
     private final BCryptPasswordEncoder encoder;
 
     private void validateDuplicateEmail(String email) throws IllegalArgumentException {
@@ -33,7 +40,7 @@ public class UserService {
         }
     }
 
-    private void validateDuplicateUsername(String username) throws IllegalArgumentException{
+    private void validateDuplicateUsername(String username) throws IllegalArgumentException {
         User findUser = userRepository.findByUsername(username);
         if (findUser != null) {
             throw new IllegalArgumentException("이미 존재하는 닉네임 입니다.");
@@ -73,10 +80,14 @@ public class UserService {
 
     public void toggleState(Long id) {
         User user = userRepository.findById(id).get();
-        if (user.isAttendState() == false){
+        if (user.isAttendState() == false) {
             user.setLatestAttendAt(new Timestamp(System.currentTimeMillis()));
             user.setLatestFinishAt(null);
-        } else{
+            List<Diary> todayDiaryList = diaryRepository.findByUserIdAndCreatedAtBetween(id
+                    , LocalDateTime.of(LocalDate.now().minusDays(1), LocalTime.of(0, 0, 0))
+                    , LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59)));
+            todayDiaryList.stream().forEach(o -> o.setAttended(true));
+        } else {
             user.setLatestFinishAt(new Timestamp(System.currentTimeMillis()));
         }
         user.setAttendState(!user.isAttendState());
@@ -87,12 +98,11 @@ public class UserService {
         User findUser = userRepository.findByUsername(username);
         if (role.equals("manager")) {
             findUser.setRole(Role.ROLE_MANAGER);
-        }
-        else if (role.equals("admin")){
+        } else if (role.equals("admin")) {
             findUser.setRole(Role.ROLE_ADMIN);
-        }
-        else
-            findUser.setRole(Role.ROLE_MEMBER);;
+        } else
+            findUser.setRole(Role.ROLE_MEMBER);
+        ;
     }
 
     public UserResponseDto getUser(Long sessionId) {
@@ -112,7 +122,7 @@ public class UserService {
         user.setEnrolled(true);
     }
 
-    public void expelMember(String username){
+    public void expelMember(String username) {
         User user = userRepository.findByUsername(username);
         user.setEnrolled(false);
     }
@@ -123,7 +133,7 @@ public class UserService {
         userRepository.findAllByEnrolledIsFalseAndGymIdIs(gymId).stream().forEach(o -> {
             results.add(o.toDto());
         });
-        return  results;
+        return results;
     }
 
     public List<UserResponseDto> enrolledList(Long sessionId) {
@@ -132,6 +142,6 @@ public class UserService {
         userRepository.findAllByEnrolledIsTrueAndGymIdIs(gymId).stream().forEach(o -> {
             results.add(o.toDto());
         });
-        return  results;
+        return results;
     }
 }

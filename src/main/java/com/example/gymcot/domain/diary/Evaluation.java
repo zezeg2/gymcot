@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum Evaluation {
-    COOD(5),
+    COOL(5),
     GOOD(4),
     NORMAL(3),
     BAD(2),
