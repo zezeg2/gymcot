@@ -81,14 +81,14 @@ public class UserService {
     public void toggleState(Long id) {
         User user = userRepository.findById(id).get();
         if (user.isAttendState() == false) {
-            user.setLatestAttendAt(new Timestamp(System.currentTimeMillis()));
+            user.setLatestAttendAt(LocalDateTime.now());
             user.setLatestFinishAt(null);
             List<Diary> todayDiaryList = diaryRepository.findByUserIdAndCreatedAtBetween(id
-                    , LocalDateTime.of(LocalDate.now().minusDays(1), LocalTime.of(0, 0, 0))
+                    , LocalDateTime.of(LocalDate.now(), LocalTime.of(0, 0, 0))
                     , LocalDateTime.of(LocalDate.now(), LocalTime.of(23, 59, 59)));
             todayDiaryList.stream().forEach(o -> o.setAttended(true));
         } else {
-            user.setLatestFinishAt(new Timestamp(System.currentTimeMillis()));
+            user.setLatestFinishAt(LocalDateTime.now());
         }
         user.setAttendState(!user.isAttendState());
     }

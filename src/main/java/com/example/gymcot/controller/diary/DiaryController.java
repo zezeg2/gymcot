@@ -3,6 +3,7 @@ package com.example.gymcot.controller.diary;
 import com.example.gymcot.config.auth.PrincipalDetails;
 import com.example.gymcot.domain.diary.Diary;
 import com.example.gymcot.domain.diary.DiaryRequestDto;
+import com.example.gymcot.domain.diary.DiaryResponseDto;
 import com.example.gymcot.domain.diary.Evaluation;
 import com.example.gymcot.domain.user.User;
 import com.example.gymcot.repository.UserRepository;
@@ -10,6 +11,9 @@ import com.example.gymcot.service.diary.DiaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import javax.websocket.server.PathParam;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/member/diary")
@@ -30,6 +34,8 @@ public class DiaryController {
         diaryService.create(principal.getUser(), diary);
     }
 
+//    @PutMapping
+
     @PutMapping("/eval{grade}")
     public void evaluate(Authentication authentication, @PathVariable int grade){
         diaryService.evaluate(getSessionId(authentication), grade);
@@ -39,4 +45,7 @@ public class DiaryController {
     public void deleteDiary(Authentication authentication){
         diaryService.deleteDiary(getSessionId(authentication));
     }
+
+//    @GetMapping("/{unit}")
+//    public List<DiaryResponseDto>
 }

@@ -5,7 +5,6 @@ import com.example.gymcot.domain.diary.DiaryRequestDto;
 import com.example.gymcot.domain.diary.Evaluation;
 import com.example.gymcot.domain.user.User;
 import com.example.gymcot.repository.DiaryRepository;
-import com.example.gymcot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +16,6 @@ import java.time.LocalTime;
 @RequiredArgsConstructor
 public class DiaryService {
 
-    private final UserRepository userRepository;
-
     private final DiaryRepository diaryRepository;
 
     public void create(User user, DiaryRequestDto diaryRequestDto) {
@@ -28,6 +25,7 @@ public class DiaryService {
             Diary diary = diaryRequestDto.toEntity();
             diary.setUser(user);
             diary.setEval(null);
+            diary.setTitle(user.getUsername() + "-" + LocalDate.now());
             diaryRepository.save(diary);
         } else{
             throw new IllegalArgumentException("다이어리는 하루에 하나만 작성 가능합니다.");
@@ -35,7 +33,7 @@ public class DiaryService {
     }
 
     public void evaluate(Long sessionId, int grade) {
-        Diary diary = diaryRepository.findByUser(sessionId);
+        Diary diary = diaryRepository.findByUserId(sessionId);
         switch (grade){
             case 1:
                 diary.setEval(Evaluation.FAIL);
@@ -51,7 +49,7 @@ public class DiaryService {
     }
 
     public void deleteDiary(Long sessionId) {
-        Diary diary = diaryRepository.findByUser(sessionId);
+        Diary diary = diaryRepository.findByUserId(sessionId);
         diaryRepository.delete(diary);
     }
 }

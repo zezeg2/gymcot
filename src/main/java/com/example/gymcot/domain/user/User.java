@@ -7,6 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -35,14 +36,14 @@ public class User {
     private boolean attendState;
 
     @CreationTimestamp
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
 
-    private Timestamp latestAttendAt;
+    private LocalDateTime latestAttendAt;
 
-    private Timestamp latestFinishAt;
+    private LocalDateTime latestFinishAt;
 
     private String provider;
 

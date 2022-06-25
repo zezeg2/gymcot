@@ -3,6 +3,7 @@ package com.example.gymcot.domain.user;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 
 @Getter
@@ -28,8 +29,8 @@ public class UserResponseDto {
 
     private boolean enrolled;
 
-    private Timestamp latestAttendAt;
+    private LocalDateTime latestAttendAt;
 
-    private Timestamp latestFinishAt;
+    private LocalDateTime latestFinishAt;
 
 }

@@ -24,6 +24,8 @@ public class Diary {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private String title;
+
     private Evaluation eval;
 
     @Embedded

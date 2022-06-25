@@ -6,6 +6,7 @@ import javax.persistence.Embeddable;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Embeddable
 @NoArgsConstructor
@@ -13,8 +14,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class Exercise {
-
-    private Target target;
 
     private LocalDateTime startAt;
 
