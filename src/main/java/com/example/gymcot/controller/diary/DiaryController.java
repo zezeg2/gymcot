@@ -6,9 +6,11 @@ import com.example.gymcot.domain.diary.DiaryResponseDto;
 import com.example.gymcot.repository.UserRepository;
 import com.example.gymcot.service.diary.DiaryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -43,9 +45,21 @@ public class DiaryController {
     @GetMapping("/today")
     public DiaryResponseDto today(Authentication authentication){
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        diaryService.todayDiary(principal.getUser().getUsername());
+        return diaryService.todayDiary(principal.getUser().getUsername());
     }
 
-//    @GetMapping("/{unit}")
-    public List<DiaryResponseDto>
+    @GetMapping("when/{date}")
+    public DiaryResponseDto findByDate(Authentication authentication, @PathVariable @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date){
+        return diaryService.findByDate(getSessionId(authentication), date);
+    }
+
+    @GetMapping("/{unit}")
+    public List<DiaryResponseDto> findByUnit(Authentication authentication, @PathVariable String unit){
+        return diaryService.findByUnit(getSessionId(authentication), unit);
+    }
+
+    @GetMapping("/calender/{month}")
+    public List<Boolean> monthDiary(Authentication authentication, @PathVariable Integer month, @RequestParam(required = false) Integer year){
+        return diaryService.monthDiary(getSessionId(authentication), month, year);
+    }
 }

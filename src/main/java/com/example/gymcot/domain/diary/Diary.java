@@ -40,4 +40,18 @@ public class Diary {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public DiaryResponseDto toDto() {
+        return DiaryResponseDto.builder()
+                .eval(eval)
+                .exercise(exercise)
+                .comment(comment)
+                .isAttended(isAttended)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .build();
+    }
+
+    ;
+
 }
