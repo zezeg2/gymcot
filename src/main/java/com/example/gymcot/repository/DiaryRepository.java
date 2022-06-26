@@ -12,5 +12,5 @@ public interface DiaryRepository extends JpaRepository<Diary, Long> {
 
     List<Diary> findByUserIdAndCreatedAtBetween(Long id, LocalDateTime start, LocalDateTime end);
 
-    Diary findByTitleIs();
+    Diary findByTitleIs(String s);
 }

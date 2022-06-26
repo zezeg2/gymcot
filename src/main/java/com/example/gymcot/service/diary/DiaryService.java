@@ -52,4 +52,8 @@ public class DiaryService {
         Diary diary = diaryRepository.findByUserId(sessionId);
         diaryRepository.delete(diary);
     }
+
+    public void todayDiary(String username) {
+        diaryRepository.findByTitleIs(LocalDate.now().toString()+username);
+    }
 }
