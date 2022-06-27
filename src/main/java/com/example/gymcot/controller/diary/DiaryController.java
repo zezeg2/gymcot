@@ -18,8 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DiaryController {
 
-    private final UserRepository userRepository;
-
     private final DiaryService diaryService;
 
     public Long getSessionId(Authentication authentication){

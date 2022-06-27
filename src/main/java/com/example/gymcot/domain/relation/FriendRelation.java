@@ -1,5 +1,6 @@
 package com.example.gymcot.domain.relation;
 
+import com.example.gymcot.domain.user.User;
 import lombok.*;
 
 import javax.persistence.DiscriminatorValue;
@@ -14,4 +15,11 @@ import javax.persistence.Entity;
 @DiscriminatorValue("F")
 public class FriendRelation extends Relation {
     private boolean approved;
+
+    @Override
+    public RelationResponseDto toDto() {
+        return RelationResponseDto.builder()
+                .toUser(super.getToUser())
+                .approved(approved).build();
+    }
 }

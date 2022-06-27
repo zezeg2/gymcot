@@ -20,4 +20,12 @@ public class TogetherRelation extends Relation {
     private Exercise exercise;
 
     private boolean completed;
+
+    @Override
+    public RelationResponseDto toDto() {
+        return RelationResponseDto.builder()
+                .toUser(super.getToUser())
+                .exercise(exercise)
+                .build();
+    }
 }
