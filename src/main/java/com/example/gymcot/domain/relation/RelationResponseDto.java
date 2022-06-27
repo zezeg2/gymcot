@@ -11,6 +11,10 @@ import lombok.*;
 @Builder
 public class RelationResponseDto {
 
+    private Long id;
+
+    private String title;
+
     private User toUser;
 
     private boolean approved;

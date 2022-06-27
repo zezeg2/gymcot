@@ -14,7 +14,9 @@ public class RelationRequestDto {
 
     private String dtype;
 
-    private Long toUsername;
+    private String title;
+
+    private String toUsername;
 
     private boolean approved;
 
@@ -28,6 +30,7 @@ public class RelationRequestDto {
             return  friendRelation;
         } else if(dtype == "f"){
             TogetherRelation togetherRelation = (TogetherRelation) base;
+            togetherRelation.setTitle(title);
             togetherRelation.setExercise(exercise);
             return togetherRelation;
         } else

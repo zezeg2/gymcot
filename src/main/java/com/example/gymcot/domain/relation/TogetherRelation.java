@@ -16,6 +16,8 @@ import javax.persistence.Entity;
 @DiscriminatorValue("T")
 public class TogetherRelation extends Relation {
 
+    private String title;
+
     @Embedded
     private Exercise exercise;
 
@@ -24,6 +26,8 @@ public class TogetherRelation extends Relation {
     @Override
     public RelationResponseDto toDto() {
         return RelationResponseDto.builder()
+                .id(super.getId())
+                .title(title)
                 .toUser(super.getToUser())
                 .exercise(exercise)
                 .build();

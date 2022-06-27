@@ -21,9 +21,11 @@ public abstract class Relation {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User fromUser;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User toUser;
 
     public abstract RelationResponseDto toDto();

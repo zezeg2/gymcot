@@ -19,6 +19,7 @@ public class FriendRelation extends Relation {
     @Override
     public RelationResponseDto toDto() {
         return RelationResponseDto.builder()
+                .id(super.getId())
                 .toUser(super.getToUser())
                 .approved(approved).build();
     }
