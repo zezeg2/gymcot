@@ -1,10 +1,7 @@
 package com.example.gymcot.service.relation;
 
 import com.example.gymcot.domain.diary.Exercise;
-import com.example.gymcot.domain.relation.FriendRelation;
-import com.example.gymcot.domain.relation.Relation;
-import com.example.gymcot.domain.relation.RelationRequestDto;
-import com.example.gymcot.domain.relation.TogetherRelation;
+import com.example.gymcot.domain.relation.*;
 import com.example.gymcot.repository.FriendRelationRepository;
 import com.example.gymcot.repository.TogetherRelationRepository;
 import com.example.gymcot.repository.UserRepository;
@@ -13,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +52,18 @@ public class RelationService {
 
     public void approveRequest(Long sessionId, String username) {
         friendRelationRepository.findByFromUser_IdAndToUser_Username(sessionId, username);
+    }
+
+    public List<RelationResponseDto> getApprovedList(Long sessionId) {
+        List<RelationResponseDto> results = new ArrayList<>();
+        friendRelationRepository.findByToUserIdAnAndApprovedIsTrue(sessionId).forEach(o -> results.add(o.toDto()));
+        return results;
+    }
+
+    public List<RelationResponseDto> getWatingList(Long sessionId) {
+        List<RelationResponseDto> results = new ArrayList<>();
+        friendRelationRepository.findByToUserIdAnAndApprovedIsFalse(sessionId).forEach(o -> results.add(o.toDto()));
+        return results;
     }
 
 

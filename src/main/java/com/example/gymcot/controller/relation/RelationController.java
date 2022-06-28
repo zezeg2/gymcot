@@ -2,12 +2,13 @@ package com.example.gymcot.controller.relation;
 
 import com.example.gymcot.config.auth.PrincipalDetails;
 import com.example.gymcot.domain.relation.RelationRequestDto;
+import com.example.gymcot.domain.relation.RelationResponseDto;
 import com.example.gymcot.service.relation.RelationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-
+import java.util.List;
 
 
 @RestController
@@ -42,6 +43,12 @@ public class RelationController {
         relationService.approveRequest(getSessionId(authentication), username);
     }
 
-//    @GetMapping("/firend/approve/list")
-//    @GetMapping("/firend/waiting/list")
+    @GetMapping("/firend/approve/list")
+    public List<RelationResponseDto> approvedFriendList(Authentication authentication){
+        return relationService.getApprovedList(getSessionId(authentication));
+    }
+    @GetMapping("/firend/waiting/list")
+    public List<RelationResponseDto> waitingFriendList(Authentication authentication){
+        return relationService.getWatingList(getSessionId(authentication));
+    }
 }
