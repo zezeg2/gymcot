@@ -60,4 +60,5 @@ public class DiaryController {
     public List<Boolean> monthDiary(Authentication authentication, @PathVariable Integer month, @RequestParam(required = false) Integer year){
         return diaryService.monthDiary(getSessionId(authentication), month, year);
     }
+
 }

@@ -23,13 +23,13 @@ public class RelationRequestDto {
     private Exercise exercise;
 
     public Relation toEntity() {
-        Relation base = Relation.builder().build();
+
         if (dtype == "f") {
-            FriendRelation friendRelation = (FriendRelation) base;
+            FriendRelation friendRelation = new FriendRelation();
             friendRelation.setApproved(approved);
             return  friendRelation;
         } else if(dtype == "f"){
-            TogetherRelation togetherRelation = (TogetherRelation) base;
+            TogetherRelation togetherRelation = new TogetherRelation();
             togetherRelation.setTitle(title);
             togetherRelation.setExercise(exercise);
             return togetherRelation;

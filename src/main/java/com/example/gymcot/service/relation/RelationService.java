@@ -51,18 +51,18 @@ public class RelationService {
     }
 
     public void approveRequest(Long sessionId, String username) {
-        friendRelationRepository.findByFromUser_IdAndToUser_Username(sessionId, username);
+        friendRelationRepository.findByFromUserIdAndToUser_Username(sessionId, username);
     }
 
     public List<RelationResponseDto> getApprovedList(Long sessionId) {
         List<RelationResponseDto> results = new ArrayList<>();
-        friendRelationRepository.findByToUserIdAnAndApprovedIsTrue(sessionId).forEach(o -> results.add(o.toDto()));
+        friendRelationRepository.findByToUserIdAndApprovedIs(sessionId, true).forEach(o -> results.add(o.toDto()));
         return results;
     }
 
     public List<RelationResponseDto> getWatingList(Long sessionId) {
         List<RelationResponseDto> results = new ArrayList<>();
-        friendRelationRepository.findByToUserIdAnAndApprovedIsFalse(sessionId).forEach(o -> results.add(o.toDto()));
+        friendRelationRepository.findByToUserIdAndApprovedIs(sessionId, false).forEach(o -> results.add(o.toDto()));
         return results;
     }
 

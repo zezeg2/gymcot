@@ -50,5 +50,6 @@ public class RelationController {
     @GetMapping("/firend/waiting/list")
     public List<RelationResponseDto> waitingFriendList(Authentication authentication){
         return relationService.getWatingList(getSessionId(authentication));
+
     }
 }

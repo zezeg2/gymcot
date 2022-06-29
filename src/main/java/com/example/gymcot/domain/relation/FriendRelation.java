@@ -16,6 +16,7 @@ import javax.persistence.Entity;
 public class FriendRelation extends Relation {
     private boolean approved;
 
+
     @Override
     public RelationResponseDto toDto() {
         return RelationResponseDto.builder()
