@@ -21,4 +21,7 @@ public class Exercise {
 
     private String details;
 
+    public Exercise(String details) {
+        this.details = details;
+    }
 }

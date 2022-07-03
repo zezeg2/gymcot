@@ -21,7 +21,8 @@ public class FriendRelation extends Relation {
     public RelationResponseDto toDto() {
         return RelationResponseDto.builder()
                 .id(super.getId())
-                .toUser(super.getToUser())
+//                .toUser(super.getToUser())
+                .fromUsername(super.getFromUser().getUsername())
                 .approved(approved).build();
     }
 }

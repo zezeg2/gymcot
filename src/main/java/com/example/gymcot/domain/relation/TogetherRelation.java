@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -18,6 +19,10 @@ public class TogetherRelation extends Relation {
 
     private String title;
 
+    private String content;
+
+    private LocalDateTime appointmentTime;
+
     @Embedded
     private Exercise exercise;
 
@@ -28,7 +33,10 @@ public class TogetherRelation extends Relation {
         return RelationResponseDto.builder()
                 .id(super.getId())
                 .title(title)
-                .toUser(super.getToUser())
+                .content(content)
+//                .toUser(super.getToUser())
+                .appointmentTime(appointmentTime)
+                .fromUsername(super.getFromUser().getUsername())
                 .exercise(exercise)
                 .build();
     }

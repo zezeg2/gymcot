@@ -29,27 +29,31 @@ public class RelationController {
     }
 
     @PutMapping("/together-start/{id}")
-    public void togetherStart(@PathVariable Long id){
-        relationService.setStartAt(id);
+    public void togetherStart(@PathVariable Long id, Authentication authentication){
+        relationService.setStartAt(id, getSessionId(authentication));
     }
 
     @PutMapping("/together-end/{id}")
-    public void togetherEnd(@PathVariable Long id){
-        relationService.setEndAt(id);
+    public void togetherEnd(@PathVariable Long id, Authentication authentication){
+        relationService.setEndAt(id, getSessionId(authentication));
     }
 
-    @PutMapping("/firend/approve{username}")
+    @PutMapping("/friend/approve/{username}")
     public void approveRequest(Authentication authentication, @PathVariable String username){
         relationService.approveRequest(getSessionId(authentication), username);
     }
 
-    @GetMapping("/firend/approve/list")
+    @GetMapping("/friend/approved/list")
     public List<RelationResponseDto> approvedFriendList(Authentication authentication){
         return relationService.getApprovedList(getSessionId(authentication));
     }
-    @GetMapping("/firend/waiting/list")
+    @GetMapping("/friend/waiting/list")
     public List<RelationResponseDto> waitingFriendList(Authentication authentication){
-        return relationService.getWatingList(getSessionId(authentication));
+        return relationService.getWaitingList(getSessionId(authentication));
+    }
 
+    @GetMapping("/together/list/{completed}")
+    public List<RelationResponseDto> togetherList(Authentication authentication, @PathVariable boolean completed){
+        return relationService.getTogetherList(getSessionId(authentication), completed);
     }
 }

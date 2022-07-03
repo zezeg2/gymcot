@@ -12,6 +12,7 @@ import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,24 +27,38 @@ public class RelationService {
         Relation relation = relationRequestDto.toEntity();
         relation.setFromUser(userRepository.findById(sessionId).get());
         relation.setToUser(userRepository.findByUsername(relationRequestDto.getToUsername()));
-        if (relationRequestDto.getDtype() == "t"){
+        if (relationRequestDto.getDtype().equals("t")){
             togetherRelationRepository.save((TogetherRelation) relation);
-        } else if(relationRequestDto.getDtype() == "f"){
+        } else if(relationRequestDto.getDtype().equals("f")){
             friendRelationRepository.save((FriendRelation) relation);
         } else{
             return;
         }
     }
 
-    public void setStartAt(Long id) {
-        TogetherRelation relation = togetherRelationRepository.findById(id).get();
+    public void setStartAt(Long id, Long sessionId) {
+        Optional<TogetherRelation> found = togetherRelationRepository.findById(id);
+        if (!found.isPresent()){
+            return;
+        }
+        TogetherRelation relation = found.get();
+        if (relation.getToUser().getId() != sessionId) {
+            return;
+        }
         Exercise exercise = relation.getExercise();
         exercise.setStartAt(LocalDateTime.now());
         relation.setExercise(exercise);
     }
 
-    public void setEndAt(Long id) {
-        TogetherRelation relation = togetherRelationRepository.findById(id).get();
+    public void setEndAt(Long id, Long sessionId) {
+        Optional<TogetherRelation> found = togetherRelationRepository.findById(id);
+        if (!found.isPresent()){
+            return;
+        }
+        TogetherRelation relation = found.get();
+        if (relation.getToUser().getId() != sessionId) {
+            return;
+        }
         Exercise exercise = relation.getExercise();
         exercise.setEndAt(LocalDateTime.now());
         relation.setExercise(exercise);
@@ -51,7 +66,8 @@ public class RelationService {
     }
 
     public void approveRequest(Long sessionId, String username) {
-        friendRelationRepository.findByFromUserIdAndToUser_Username(sessionId, username);
+        FriendRelation result = friendRelationRepository.findByFromUser_UsernameAndToUserId(username, sessionId);
+        result.setApproved(true);
     }
 
     public List<RelationResponseDto> getApprovedList(Long sessionId) {
@@ -60,9 +76,15 @@ public class RelationService {
         return results;
     }
 
-    public List<RelationResponseDto> getWatingList(Long sessionId) {
+    public List<RelationResponseDto> getWaitingList(Long sessionId) {
         List<RelationResponseDto> results = new ArrayList<>();
         friendRelationRepository.findByToUserIdAndApprovedIs(sessionId, false).forEach(o -> results.add(o.toDto()));
+        return results;
+    }
+
+    public List<RelationResponseDto> getTogetherList(Long sessionId, boolean completed) {
+        List<RelationResponseDto> results = new ArrayList<>();
+        togetherRelationRepository.findAllByToUserIdAndCompletedIs(completed).forEach(o -> results.add(o.toDto()));
         return results;
     }
 

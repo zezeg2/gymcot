@@ -20,7 +20,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         String exception = (String) request.getAttribute("exception");
         ExceptionCode exceptionCode = null;
-        log.debug("log: exception: {} ", exception);
 
         /**
          * 최초 로그인 실패(아이디 및 비밀번호 불일치)

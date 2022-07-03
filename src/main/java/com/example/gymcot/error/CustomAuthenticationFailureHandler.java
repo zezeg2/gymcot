@@ -19,7 +19,6 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         String ex = (String) request.getAttribute("exception");
-        log.debug("log: exception : {} ", exception);
         ExceptionCode exceptionCode = null;
 
         if (ex.equals(ExceptionCode.NOT_FOUND_USER.getCode())) {
