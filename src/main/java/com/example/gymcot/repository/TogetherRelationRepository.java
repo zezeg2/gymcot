@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface TogetherRelationRepository extends JpaRepository<TogetherRelation, Long> {
 
-    List<TogetherRelation> findAllByToUserIdAndCompletedIs(boolean completed);
+    List<TogetherRelation> findAllByToUserIdAndCompletedIs(Long id, boolean completed);
 }

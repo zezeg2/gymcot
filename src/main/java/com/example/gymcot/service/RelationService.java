@@ -1,4 +1,4 @@
-package com.example.gymcot.service.relation;
+package com.example.gymcot.service;
 
 import com.example.gymcot.domain.diary.Exercise;
 import com.example.gymcot.domain.relation.*;
@@ -9,7 +9,6 @@ import com.example.gymcot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.security.sasl.AuthenticationException;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ public class RelationService {
     public void setStartAt(Long id, Long sessionId) {
         Optional<TogetherRelation> found = togetherRelationRepository.findById(id);
         found.ifPresent(o -> {
-            if (o.getToUser().getId() == sessionId) {
+            if (o.getToUser().getId().equals(sessionId)) {
                 Exercise exercise = o.getExercise();
                 exercise.setStartAt(LocalDateTime.now());
                 o.setExercise(exercise);
@@ -55,7 +54,7 @@ public class RelationService {
     public void setEndAt(Long id, Long sessionId) {
         Optional<TogetherRelation> found = togetherRelationRepository.findById(id);
         found.ifPresent(o -> {
-            if (o.getToUser().getId() == sessionId) {
+            if (o.getToUser().getId().equals(sessionId)) {
                 Exercise exercise = o.getExercise();
                 exercise.setEndAt(LocalDateTime.now());
                 o.setExercise(exercise);
@@ -68,9 +67,7 @@ public class RelationService {
     }
 
     public void approveRequest(Long sessionId, String username) {
-        friendRelationRepository.findByFromUser_UsernameAndToUserId(username, sessionId).ifPresent(o ->{
-            o.setApproved(true);
-        });
+        friendRelationRepository.findByFromUser_UsernameAndToUserId(username, sessionId).ifPresent(o -> o.setApproved(true));
 
         FriendRelation friendRelation = new FriendRelation(true);
         friendRelation.setFromUser(userRepository.findById(sessionId).get());
@@ -92,7 +89,7 @@ public class RelationService {
 
     public List<RelationResponseDto> getTogetherList(Long sessionId, boolean completed) {
         List<RelationResponseDto> results = new ArrayList<>();
-        togetherRelationRepository.findAllByToUserIdAndCompletedIs(completed).forEach(o -> results.add(o.toDto()));
+        togetherRelationRepository.findAllByToUserIdAndCompletedIs(sessionId,completed).forEach(o -> results.add(o.toDto()));
         return results;
     }
 

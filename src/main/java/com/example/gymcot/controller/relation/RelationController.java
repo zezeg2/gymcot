@@ -3,7 +3,7 @@ package com.example.gymcot.controller.relation;
 import com.example.gymcot.config.auth.PrincipalDetails;
 import com.example.gymcot.domain.relation.RelationRequestDto;
 import com.example.gymcot.domain.relation.RelationResponseDto;
-import com.example.gymcot.service.relation.RelationService;
+import com.example.gymcot.service.RelationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;

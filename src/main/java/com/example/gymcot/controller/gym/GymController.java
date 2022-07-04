@@ -4,7 +4,7 @@ import com.example.gymcot.config.auth.PrincipalDetails;
 import com.example.gymcot.domain.gym.GymRequestDto;
 import com.example.gymcot.domain.gym.GymResponseDto;
 import com.example.gymcot.repository.GymRepository;
-import com.example.gymcot.service.gym.GymService;
+import com.example.gymcot.service.GymService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.RequestEntity;

@@ -1,4 +1,4 @@
-package com.example.gymcot.service.user;
+package com.example.gymcot.service;
 
 import com.example.gymcot.domain.diary.Diary;
 import com.example.gymcot.domain.user.Role;

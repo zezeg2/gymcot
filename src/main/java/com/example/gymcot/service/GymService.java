@@ -1,4 +1,4 @@
-package com.example.gymcot.service.gym;
+package com.example.gymcot.service;
 
 import com.example.gymcot.domain.gym.Gym;
 import com.example.gymcot.domain.gym.GymRequestDto;
@@ -42,17 +42,13 @@ public class GymService {
 
     public List<GymResponseDto> preEnrolledGymList() {
         List<GymResponseDto> result = new ArrayList<>();
-        gymRepository.findAllByApprovedIsFalse().stream().forEach(o -> {
-            result.add(o.toDto());
-        });
+        gymRepository.findAllByApprovedIsFalse().forEach(o -> result.add(o.toDto()));
         return result;
     }
 
     public List<GymResponseDto> enrolledGymList() {
         List<GymResponseDto> result = new ArrayList<>();
-        gymRepository.findAllByApprovedIsTrue().stream().forEach(o -> {
-            result.add(o.toDto());
-        });
+        gymRepository.findAllByApprovedIsTrue().forEach(o -> result.add(o.toDto()));
         return result;
     }
 
@@ -87,9 +83,7 @@ public class GymService {
         else{
             searched = gymRepository.findAllByTitleContainsAndAddressContainsAndApprovedIsTrue(title, address);
         }
-        searched.stream().forEach(o -> {
-            result.add(o.toDto());
-        });
+        searched.forEach(o -> result.add(o.toDto()));
         return result;
     }
 }

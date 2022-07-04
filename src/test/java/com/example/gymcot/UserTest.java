@@ -1,6 +1,6 @@
 package com.example.gymcot;
 
-import com.example.gymcot.service.user.UserService;
+import com.example.gymcot.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

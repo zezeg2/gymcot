@@ -40,8 +40,8 @@ class RelationControllerTest {
 
     @BeforeEach
     void setUp() {
-        cookies = new Cookie[]{new Cookie("Authorization", "Bearer+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZW1iZXIyIiwiaWQiOjMsImV4cCI6MTY1Njg2MzYzNSwidXNlcm5hbWUiOiJtZW1iZXIyIn0.-VygL9mM7kCLKI8lRLX3QfBpRJ32BzL0nfzxBHB3eUy2V3oN4Ab-TsSVr-DMJCPuDkQle6tAtLMPpBGJslrNRQ")
-                , new Cookie("remember-me", "NEV3U1k5NmtmZWYwZlMwUk80cGZnQSUzRCUzRDpOaVNqSEwybkJVRElTJTJGRnE4NFc1OHclM0QlM0Q")};
+        cookies = new Cookie[]{new Cookie("Authorization", "Bearer+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZW1iZXIzIiwiaWQiOjQsImV4cCI6MTY1NjkzNzIzMSwidXNlcm5hbWUiOiJtZW1iZXIzIn0.CG4xZXZCX84b2_wxSGLfOuOjsr6fzeOp5zxLoua4Tsg86W2SshwryTEPWPcEe6vzUwsp3L4aPtuGalzhxNF0yw")
+                , new Cookie("remember-me", "RW1vcEZ2emRaSGx0UHI4JTJGaEFqJTJGcnclM0QlM0Q6MXNlNmRGSk5RM05OaG1iZkZZd3dTUSUzRCUzRA")};
     }
 
 
@@ -61,7 +61,7 @@ class RelationControllerTest {
 
     @Test
     void rememberMeLoginTest() throws Exception {
-        Map<String, String> input = loginInput("member2", "whdqkr003#");
+        Map<String, String> input = loginInput("member3", "whdqkr003#");
         Cookie[] cookies = mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(input))
@@ -103,7 +103,7 @@ class RelationControllerTest {
 
     @Test
     void approveRequest() throws Exception {
-        mockMvc.perform(put("/api/v1/member/relation/friend/approve/member1")
+        mockMvc.perform(put("/api/v1/member/relation/friend/approve/member2")
                 .cookie(cookies)).andExpect(status().isOk())
                 .andDo(print());
     }

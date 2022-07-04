@@ -1,11 +1,10 @@
 package com.example.gymcot.controller.user;
 
-import com.example.gymcot.domain.user.Role;
 import com.example.gymcot.domain.user.User;
 import com.example.gymcot.domain.user.UserRequestDto;
 import com.example.gymcot.domain.user.UserResponseDto;
 import com.example.gymcot.repository.UserRepository;
-import com.example.gymcot.service.user.UserService;
+import com.example.gymcot.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

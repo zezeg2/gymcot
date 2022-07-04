@@ -1,4 +1,4 @@
-package com.example.gymcot.service.diary;
+package com.example.gymcot.service;
 
 import com.example.gymcot.domain.diary.Diary;
 import com.example.gymcot.domain.diary.DiaryRequestDto;
@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -57,7 +58,7 @@ public class DiaryService {
     }
 
     public DiaryResponseDto todayDiary(String username) {
-        return diaryRepository.findByTitleIs(LocalDate.now().toString() + username).toDto();
+        return diaryRepository.findByTitleIs(LocalDate.now() + username).toDto();
     }
 
     public DiaryResponseDto findByDate(Long sessionId, LocalDate date) {
@@ -84,9 +85,7 @@ public class DiaryService {
                 find.add(diaryRepository.findByUserId(sessionId));
                 break;
         }
-        find.forEach(o -> {
-            results.add(o.toDto());
-        });
+        find.forEach(o -> results.add(o.toDto()));
         return results;
     }
 
@@ -97,11 +96,7 @@ public class DiaryService {
 
         List<Boolean> calender = new ArrayList<>();
         LocalDate critic;
-        if (year == null){
-            critic = LocalDate.of(LocalDate.now().getYear(), month, 1);
-        } else{
-            critic = LocalDate.of(year, month, 1);
-        }
+        critic = LocalDate.of(Objects.requireNonNullElseGet(year, () -> LocalDate.now().getYear()), month, 1);
 
         List<Diary> diaries = diaryRepository.findByUserIdAndCreatedAtBetween(sessionId
                 , LocalDateTime.of(critic, LocalTime.MIN)
