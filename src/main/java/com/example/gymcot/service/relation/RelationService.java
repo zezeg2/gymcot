@@ -2,12 +2,14 @@ package com.example.gymcot.service.relation;
 
 import com.example.gymcot.domain.diary.Exercise;
 import com.example.gymcot.domain.relation.*;
+import com.example.gymcot.error.NotAllowedUserException;
 import com.example.gymcot.repository.FriendRelationRepository;
 import com.example.gymcot.repository.TogetherRelationRepository;
 import com.example.gymcot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.security.sasl.AuthenticationException;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -38,36 +40,42 @@ public class RelationService {
 
     public void setStartAt(Long id, Long sessionId) {
         Optional<TogetherRelation> found = togetherRelationRepository.findById(id);
-        if (!found.isPresent()){
-            return;
-        }
-        TogetherRelation relation = found.get();
-        if (relation.getToUser().getId() != sessionId) {
-            return;
-        }
-        Exercise exercise = relation.getExercise();
-        exercise.setStartAt(LocalDateTime.now());
-        relation.setExercise(exercise);
+        found.ifPresent(o -> {
+            if (o.getToUser().getId() == sessionId) {
+                Exercise exercise = o.getExercise();
+                exercise.setStartAt(LocalDateTime.now());
+                o.setExercise(exercise);
+
+            } else{
+                throw new NotAllowedUserException();
+            }
+        });
     }
 
     public void setEndAt(Long id, Long sessionId) {
         Optional<TogetherRelation> found = togetherRelationRepository.findById(id);
-        if (!found.isPresent()){
-            return;
-        }
-        TogetherRelation relation = found.get();
-        if (relation.getToUser().getId() != sessionId) {
-            return;
-        }
-        Exercise exercise = relation.getExercise();
-        exercise.setEndAt(LocalDateTime.now());
-        relation.setExercise(exercise);
-        relation.setCompleted(true);
+        found.ifPresent(o -> {
+            if (o.getToUser().getId() == sessionId) {
+                Exercise exercise = o.getExercise();
+                exercise.setEndAt(LocalDateTime.now());
+                o.setExercise(exercise);
+                o.setCompleted(true);
+
+            } else{
+                throw new NotAllowedUserException();
+            }
+        });
     }
 
     public void approveRequest(Long sessionId, String username) {
-        FriendRelation result = friendRelationRepository.findByFromUser_UsernameAndToUserId(username, sessionId);
-        result.setApproved(true);
+        friendRelationRepository.findByFromUser_UsernameAndToUserId(username, sessionId).ifPresent(o ->{
+            o.setApproved(true);
+        });
+
+        FriendRelation friendRelation = new FriendRelation(true);
+        friendRelation.setFromUser(userRepository.findById(sessionId).get());
+        friendRelation.setToUser(userRepository.findByUsername(username));
+        friendRelationRepository.save(friendRelation);
     }
 
     public List<RelationResponseDto> getApprovedList(Long sessionId) {
@@ -89,5 +97,4 @@ public class RelationService {
     }
 
 
-//    public void approveRequest
 }
