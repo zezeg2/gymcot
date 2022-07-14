@@ -94,4 +94,7 @@ public class RelationService {
     }
 
 
+    public void deleteRelation(Long sessionId, String username) {
+
+    }
 }

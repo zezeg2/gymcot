@@ -56,4 +56,9 @@ public class RelationController {
     public List<RelationResponseDto> togetherList(Authentication authentication, @PathVariable boolean completed){
         return relationService.getTogetherList(getSessionId(authentication), completed);
     }
+
+    @DeleteMapping("/friend/delete/{username}")
+    public void deleteRelation(Authentication authentication, @PathVariable String username){
+        relationService.deleteRelation(getSessionId(authentication), username);
+    }
 }

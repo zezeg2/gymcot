@@ -6,7 +6,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Getter
@@ -51,7 +50,4 @@ public class Diary {
                 .updatedAt(updatedAt)
                 .build();
     }
-
-    ;
-
 }

@@ -1,12 +1,12 @@
 package com.example.gymcot.domain.diary;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Embeddable;
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Embeddable
 @NoArgsConstructor
