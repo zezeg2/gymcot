@@ -32,8 +32,6 @@ public class RelationService {
             togetherRelationRepository.save((TogetherRelation) relation);
         } else if(relationRequestDto.getDtype().equals("f")){
             friendRelationRepository.save((FriendRelation) relation);
-        } else{
-            return;
         }
     }
 
@@ -94,7 +92,19 @@ public class RelationService {
     }
 
 
-    public void deleteRelation(Long sessionId, String username) {
+    public void deleteFriend(Long sessionId, String username) {
+        Long fromUserId = userRepository.findByUsername(username).getId();
+        togetherRelationRepository.findById(sessionId).ifPresent(o ->{
+            friendRelationRepository.delete(friendRelationRepository.findByFromUserIdAndToUserId(sessionId, fromUserId).get());
+            friendRelationRepository.delete(friendRelationRepository.findByFromUserIdAndToUserId(fromUserId, sessionId).get());
+        });
+    }
 
+    public void deleteTogether(Long sessionId, String username) {
+        Long fromUserId = userRepository.findByUsername(username).getId();
+        togetherRelationRepository.findById(sessionId).ifPresent(o ->{
+            friendRelationRepository.delete(friendRelationRepository.findByFromUserIdAndToUserId(sessionId, fromUserId).get());
+            friendRelationRepository.delete(friendRelationRepository.findByFromUserIdAndToUserId(fromUserId, sessionId).get());
+        });
     }
 }

@@ -1,6 +1,7 @@
 package com.example.gymcot.domain.user;
 
 import com.example.gymcot.domain.gym.Gym;
+import com.example.gymcot.domain.relation.Relation;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -8,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -52,6 +54,10 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gym_id")
     private Gym gym;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "relation_id")
+    private List<Relation> relation;
 
     private boolean enrolled;
 

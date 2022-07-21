@@ -21,8 +21,13 @@ public class ApiExceptionControllerAdvice {
         return new ExceptionPayload(exception, ExceptionCode.INVALID_INPUT_VALUE);
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    public ExceptionPayload notAllowedUserException(RuntimeException exception) {
+        return new ExceptionPayload(exception, ExceptionCode.NOT_ALLOW_ACCESS);
+    }
+
     @ExceptionHandler(NotAllowedUserException.class)
-    public ExceptionPayload notAllowedUserException(IllegalArgumentException exception) {
+    public ExceptionPayload notAllowedUserException(NotAllowedUserException exception) {
         return new ExceptionPayload(exception, ExceptionCode.NOT_ALLOW_ACCESS);
     }
 

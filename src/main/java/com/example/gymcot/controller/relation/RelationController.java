@@ -58,7 +58,12 @@ public class RelationController {
     }
 
     @DeleteMapping("/friend/delete/{username}")
-    public void deleteRelation(Authentication authentication, @PathVariable String username){
-        relationService.deleteRelation(getSessionId(authentication), username);
+    public void deleteFriendRelation(Authentication authentication, @PathVariable String username){
+        relationService.deleteFriend(getSessionId(authentication), username);
+    }
+
+    @DeleteMapping("/together/delete/{username}")
+    public void deleteTogetherRelation(Authentication authentication, @PathVariable String username){
+        relationService.deleteFriend(getSessionId(authentication), username);
     }
 }
