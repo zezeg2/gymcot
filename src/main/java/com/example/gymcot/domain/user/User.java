@@ -2,6 +2,7 @@ package com.example.gymcot.domain.user;
 
 import com.example.gymcot.domain.gym.Gym;
 import com.example.gymcot.domain.relation.Relation;
+import com.example.gymcot.domain.team.TeamMember;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -58,6 +59,10 @@ public class User {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "relation_id")
     private List<Relation> relation;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_member_id")
+    private List<TeamMember> teamMemberList;
 
     private boolean enrolled;
 
