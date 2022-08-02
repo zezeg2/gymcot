@@ -2,6 +2,14 @@ package com.example.gymcot.controller.user;
 
 import com.example.gymcot.domain.user.UserRequestDto;
 import com.example.gymcot.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -17,7 +25,6 @@ import java.io.IOException;
 public class CommonController {
 
     private final UserService userService;
-
     @ResponseBody
     @GetMapping({".", "/"})
     public String index() {
