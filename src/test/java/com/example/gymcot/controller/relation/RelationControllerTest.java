@@ -40,8 +40,8 @@ class RelationControllerTest {
 
     @BeforeEach
     void setUp() {
-        cookies = new Cookie[]{new Cookie("Authorization", "Bearer+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZW1iZXIxIiwiaWQiOjEsImV4cCI6MTY1ODM5MzU3OCwidXNlcm5hbWUiOiJtZW1iZXIxIn0.uYzkjzJfsG9gvNnNZ9C2zmn5S5o6vXoyacYNNID7oR4joKsjFDBHwzrk7IQ2OM9ouWcgow0d686E6R2_IzvTjw")
-                , new Cookie("remember-me", "bUNVdkRQVnJmR1ZFYmlObDREaHRkZyUzRCUzRDpQTWM5Nmh6SFolMkYlMkJuZ2FlSWt6UHZIQSUzRCUzRA")};
+        cookies = new Cookie[]{new Cookie("Authorization", "Bearer+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZW1iZXIyIiwiaWQiOjIsImV4cCI6MTY1OTQzMjk5OSwidXNlcm5hbWUiOiJtZW1iZXIyIn0.pwrmUksZGlBGO2B7y7Ku65gGKXU0nIoXHNDrZ2WlfhL7616w61sYs5uHs3dBI7_wIkDtRFKF_1gSElu-sDKxMg")
+                , new Cookie("remember-me", "b1lUMGhSMmY0dU5IbnF0bkRBMVV0USUzRCUzRDpESjVkUm9RbmphNWN5UzQ0TVBpaTJBJTNEJTNE")};
 //        cookies = new Cookie[]{new Cookie("Authorization", "Bearer+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZW1iZXIyIiwiaWQiOjIsImV4cCI6MTY1ODM5MzYwOSwidXNlcm5hbWUiOiJtZW1iZXIyIn0.NnuWtlDvCmxjawgSg7P3wskOy9edBMlFtK1Wis07Lox4UihauwBQrizFUfvOP2dmRxVKtV52Zxna8OW9GaNoDg")
 //                , new Cookie("remember-me", "NWp1NEFDMGJuMCUyRm1JbW5IZlhOZWdnJTNEJTNEOko0Vm0lMkZzR2dVa1hMV29EUnpSZiUyQlRnJTNEJTNE")};
     }

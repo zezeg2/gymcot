@@ -14,8 +14,8 @@ import java.util.Date;
 public interface JwtProperties {
 
     String SECRET = "jby";
-    Integer EXPIRATION_TIME = 60*24*1000;
-//    Integer EXPIRATION_TIME = 30*1000;
+//    Integer EXPIRATION_TIME = 60*24*1000;
+    Integer EXPIRATION_TIME = 30*1000;
     String TOKEN_PREFIX = "Bearer ";
     String HEADER_STRING = "Authorization";
 

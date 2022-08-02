@@ -34,7 +34,7 @@ public class AdminApiController extends UserApiController {
         return userService.getUser(getSessionId(authentication));
     }
 
-    @PostMapping("/cr/{username}/{role}")
+    @PutMapping("/cr/{username}/{role}")
     public void changeRole(@PathVariable String username, @PathVariable String role){
         userService.changeRole(username, role);
     }

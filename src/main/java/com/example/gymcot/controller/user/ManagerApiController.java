@@ -43,12 +43,12 @@ public class ManagerApiController extends UserApiController {
         userService.expelMember(username);
     }
 
-    @GetMapping("waiting-list")
+    @GetMapping("/waiting-list")
     public List<UserResponseDto> waitingList(Authentication authentication){
         return userService.waitingList(getSessionId(authentication));
     }
 
-    @GetMapping("enrolled-user-list")
+    @GetMapping("/enrolled-user-list")
     public List<UserResponseDto> waintingList(Authentication authentication){
         return userService.enrolledList(getSessionId(authentication));
     }
