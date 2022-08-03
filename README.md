@@ -35,6 +35,8 @@
 	- Authentication -> AuthenticationFailureHandler 구현
 	- Authorization -> AuthenticationEntrypoint 구현
 
+[시큐리티 관련 세부 설정](https://github.com/zezeg2/gymcot/tree/main/src/main/java/com/example/gymcot/config)
+
 ### ✣ API 기능 요구사항
 
 ### User
