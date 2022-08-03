@@ -6,6 +6,7 @@ import com.example.gymcot.domain.diary.DiaryResponseDto;
 import com.example.gymcot.domain.diary.Evaluation;
 import com.example.gymcot.domain.user.User;
 import com.example.gymcot.repository.DiaryRepository;
+import com.example.gymcot.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ import java.util.Objects;
 public class DiaryService {
 
     private final DiaryRepository diaryRepository;
+    private final UserRepository userRepository;
 
     public void create(User user, DiaryRequestDto diaryRequestDto) {
         if (diaryRepository.findByUserIdAndCreatedAtBetween(user.getId()
@@ -37,7 +39,7 @@ public class DiaryService {
     }
 
     public void evaluate(Long sessionId, int grade) {
-        Diary diary = diaryRepository.findByUserId(sessionId);
+        Diary diary = diaryRepository.findByTitleIs(userRepository.findById(sessionId).get().getUsername() + "-" + LocalDate.now());
         switch (grade) {
             case 1:
                 diary.setEval(Evaluation.FAIL);
@@ -53,12 +55,12 @@ public class DiaryService {
     }
 
     public void deleteDiary(Long sessionId) {
-        Diary diary = diaryRepository.findByUserId(sessionId);
+        Diary diary = diaryRepository.findByTitleIs(userRepository.findById(sessionId).get().getUsername() + "-" + LocalDate.now());
         diaryRepository.delete(diary);
     }
 
     public DiaryResponseDto todayDiary(String username) {
-        return diaryRepository.findByTitleIs(LocalDate.now() + username).toDto();
+        return diaryRepository.findByTitleIs(username + "-" + LocalDate.now()).toDto();
     }
 
     public DiaryResponseDto findByDate(Long sessionId, LocalDate date) {

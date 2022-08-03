@@ -68,7 +68,7 @@ public class GymController {
         return gymDtoList;
     }
 
-    @GetMapping("all-list")
+    @GetMapping("/all-list")
     public List<GymResponseDto> allList(){
         List<GymResponseDto> results = new ArrayList<>();
         gymRepository.findAll().stream().forEach(o -> results.add(o.toDto()));
@@ -87,7 +87,7 @@ public class GymController {
     }
 
     @GetMapping("/search")
-    public List<GymResponseDto> searcdEnrolledGymList(@RequestParam String title,
+    public List<GymResponseDto> searchEnrolledGymList(@RequestParam String title,
                                                       @RequestParam(required = false) String address,
                                                       @RequestParam(required = false) String roadAddress){
         return gymService.searchEnrolledGymList(title, address, roadAddress);
@@ -106,7 +106,7 @@ public class GymController {
     }
 
     @PreAuthorize(value = "hasRole('ROLE_MANAGER')")
-    @PostMapping("/update")
+    @PutMapping("/update")
     public void update(Authentication authentication, @RequestBody GymRequestDto gymDto){
         gymService.update(getSessionId(authentication), gymDto);
     }

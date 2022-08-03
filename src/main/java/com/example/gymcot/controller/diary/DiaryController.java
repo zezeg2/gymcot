@@ -29,7 +29,7 @@ public class DiaryController {
         diaryService.create(principal.getUser(), diary);
     }
 
-    @PutMapping("/eval{grade}")
+    @PutMapping("/eval/{grade}")
     public void evaluate(Authentication authentication, @PathVariable int grade){
         diaryService.evaluate(getSessionId(authentication), grade);
     }

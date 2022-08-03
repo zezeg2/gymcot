@@ -28,14 +28,14 @@ public class RelationController {
         relationService.makeRelation(getSessionId(authentication), relationRequestDto);
     }
 
-    @PutMapping("/together-start/{id}")
-    public void togetherStart(@PathVariable Long id, Authentication authentication){
-        relationService.setStartAt(id, getSessionId(authentication));
+    @PutMapping("/together-start/{relation_id}")
+    public void togetherStart(@PathVariable Long relation_id, Authentication authentication){
+        relationService.setStartAt(relation_id, getSessionId(authentication));
     }
 
-    @PutMapping("/together-end/{id}")
-    public void togetherEnd(@PathVariable Long id, Authentication authentication){
-        relationService.setEndAt(id, getSessionId(authentication));
+    @PutMapping("/together-end/{relation_id}")
+    public void togetherEnd(@PathVariable Long relation_id, Authentication authentication){
+        relationService.setEndAt(relation_id, getSessionId(authentication));
     }
 
     @PutMapping("/friend/approve/{username}")
