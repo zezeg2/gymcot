@@ -1,5 +1,6 @@
 package com.example.gymcot.domain.post;
 
+import com.example.gymcot.domain.gym.Gym;
 import com.example.gymcot.domain.user.User;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -33,4 +34,7 @@ public abstract class Post {
     private Timestamp updatedAt;
 
     private String content;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Gym gym;
 }

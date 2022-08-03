@@ -271,3 +271,9 @@ GymResponseController
 	| "when/{date}"       | Member        | 특정 날짜의 다이어리 조회    | get    | Authentication <br />PathVariable : LocalDate date(pattern = "yyyy-MM-dd") | DiaryReausetDto       |
 	| "/eval/{grade}"     | Member        | 금일 활동 평가               | put    | Authentication<br />PathVariable : String grade              | void                  |
 	| "/delete"           | Member        | 다이어리 삭제                | delete | Authentication                                               | void                  |
+
+
+
+### Entity 관계도 (ER Diagram & 클래스 상속관계)
+
+![image-20220803190901209](README/image-20220803190901209.png)
